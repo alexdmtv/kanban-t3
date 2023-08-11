@@ -1,0 +1,52 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model boards {
+    id         Int      @id @default(autoincrement())
+    owner_id   String   @db.VarChar
+    name       String   @db.VarChar(256)
+    created_at DateTime @default(now()) @db.Timestamp(6)
+    updated_at DateTime @default(now()) @db.Timestamp(6)
+    lists      lists[]
+}
+
+model lists {
+    id             Int      @id @default(autoincrement())
+    board_id       Int
+    name           String   @db.VarChar(256)
+    color_code     String   @db.VarChar(7)
+    board_position Int
+    created_at     DateTime @default(now()) @db.Timestamp(6)
+    updated_at     DateTime @default(now()) @db.Timestamp(6)
+    boards         boards   @relation(fields: [board_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "lists_board_id_boards_id_fk")
+    tasks          tasks[]
+}
+
+model subtasks {
+    id            Int      @id @default(autoincrement())
+    task_id       Int
+    name          String   @db.VarChar(256)
+    task_position Int
+    is_completed  Boolean  @default(false)
+    created_at    DateTime @default(now()) @db.Timestamp(6)
+    updated_at    DateTime @default(now()) @db.Timestamp(6)
+    tasks         tasks    @relation(fields: [task_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "subtasks_task_id_tasks_id_fk")
+}
+
+model tasks {
+    id            Int        @id @default(autoincrement())
+    list_id       Int
+    name          String     @db.VarChar(256)
+    list_position Int
+    description   String?
+    created_at    DateTime   @default(now()) @db.Timestamp(6)
+    updated_at    DateTime   @default(now()) @db.Timestamp(6)
+    subtasks      subtasks[]
+    lists         lists      @relation(fields: [list_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tasks_list_id_lists_id_fk")
+}
