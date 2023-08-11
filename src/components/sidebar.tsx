@@ -31,22 +31,27 @@ export default function Sidebar({ className }: { className?: string }) {
         className={cn(
           "group group mr-5 mt-2 flex items-center gap-3 rounded-e-full py-3.5 pl-6 text-heading-m text-medium-grey hover:bg-main-purple/10 hover:text-main-purple dark:hover:bg-white lg:mr-6",
           {
-            "absolute bottom-8 left-0 m-0 bg-main-purple p-[1.125rem]":
+            "absolute bottom-8 left-0 m-0 bg-main-purple px-[1.125rem] hover:bg-main-purple-hover dark:hover:bg-main-purple-hover":
               collapsed,
           }
         )}
       >
-        <SidebarIcon
-          type={collapsed ? "show" : "hide"}
-          className={cn("fill-medium-grey group-hover:fill-main-purple", {
-            "fill-white": collapsed,
-          })}
-        />
+        <div
+          className={cn("flex items-center", { "h-[1.40625rem]": collapsed })}
+        >
+          <SidebarIcon
+            type={collapsed ? "show" : "hide"}
+            className={cn("fill-medium-grey group-hover:fill-main-purple", {
+              "fill-white group-hover:fill-white": collapsed,
+            })}
+          />
+        </div>
         <span className={cn("whitespace-nowrap", { hidden: collapsed })}>
           Hide Sidebar
         </span>
       </button>
 
+      {/* Invisible button for maintaining layout */}
       <button
         onClick={() => setCollapsed((collapsed) => !collapsed)}
         id="sidebar-toggle-button"
