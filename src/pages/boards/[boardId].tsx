@@ -1,4 +1,4 @@
-import BoardHeader from "@/components/board-header";
+// import BoardHeader from "@/components/board-header";
 import BoardList from "@/components/board-list";
 import BoardsLayout from "@/components/boards-layout";
 import Button from "@/components/button";
@@ -7,6 +7,13 @@ import Spinner from "@/components/spinner";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
 import type { ReactElement } from "react";
+
+import dynamic from "next/dynamic";
+import { Skeleton } from "@/components/ui/skeleton";
+const BoardHeader = dynamic(() => import("@/components/board-header"), {
+  loading: () => <Skeleton className="h-16 md:h-20 lg:h-24" />,
+  ssr: false,
+});
 
 export default function BoardPage() {
   const { query } = useRouter();
@@ -37,7 +44,7 @@ export default function BoardPage() {
     <>
       <BoardHeader board={board} isLoading={isLoading} />
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center">
+        <div className="col-span-2 flex flex-col items-center justify-center">
           <Spinner className="h-20 w-20" />
         </div>
       ) : (

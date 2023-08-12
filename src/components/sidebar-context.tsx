@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 const SidebarContext = createContext<{
   collapsed: boolean;
@@ -22,18 +22,6 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   }
 
   const [collapsed, setCollapsed] = useState(getSidebarInitialState);
-
-  // useEffect(() => {
-  //   const LScollapsed = localStorage.getItem("collapsed");
-  //   if (LScollapsed) {
-  //     const parsedValue: unknown = JSON.parse(LScollapsed);
-  //     if (typeof parsedValue === "boolean") {
-  //       setCollapsed(parsedValue);
-  //     }
-  //   } else {
-  //     localStorage.setItem("collapsed", JSON.stringify(collapsed));
-  //   }
-  // }, [collapsed]);
 
   function toggleSidebar() {
     setCollapsed((prev) => {
