@@ -29,7 +29,6 @@ export default function BoardHeader({
   board: BoardWithListsTasksSubtasks | null | undefined;
   isLoading?: boolean;
 }) {
-  console.log(isLoading);
   return (
     <div className="flex h-16 items-center border-lines-light bg-white dark:border-lines-dark dark:bg-dark-grey md:h-20 md:border-b lg:h-24">
       <div className="ml-4 md:ml-6">

@@ -11,9 +11,7 @@ export default function BoardsIndex() {
   if (isLoading) return <p>Redirecting...</p>;
 
   if (data) {
-    push(`/boards/${data.id}`).catch((e) =>
-      console.error("Couldn't redirect to a board", e)
-    );
+    void push(`/boards/${data.id}`);
   }
 
   return (

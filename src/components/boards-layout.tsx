@@ -1,5 +1,8 @@
 import FloatingAddButton from "./floating-add-button";
-import Sidebar from "./sidebar";
+import dynamic from "next/dynamic";
+const Sidebar = dynamic(() => import("./sidebar"), {
+  ssr: false,
+});
 
 export default function BoardsLayout({
   children,

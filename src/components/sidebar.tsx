@@ -1,11 +1,11 @@
-import { useState } from "react";
 import DesktopLogo from "./desktop-logo";
 import Nav from "./nav";
 import SidebarIcon from "./sidebar-icon-svg";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "./sidebar-context";
 
 export default function Sidebar({ className }: { className?: string }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed, toggleSidebar } = useSidebar();
 
   return (
     <aside
@@ -13,7 +13,9 @@ export default function Sidebar({ className }: { className?: string }) {
       className={cn(
         "hidden flex-col border-r border-lines-light bg-white pb-8 transition-[width] duration-300 ease-in-out dark:border-lines-dark dark:bg-dark-grey md:col-span-1 md:flex md:w-[16.3125rem] lg:w-[18.75rem]",
         className,
-        { "overflow-hidden md:w-0 lg:w-0": collapsed }
+        {
+          "overflow-hidden md:w-0 lg:w-0": collapsed,
+        }
       )}
     >
       <div className="flex h-20 items-center lg:h-24">
@@ -26,7 +28,7 @@ export default function Sidebar({ className }: { className?: string }) {
       />
 
       <button
-        onClick={() => setCollapsed((collapsed) => !collapsed)}
+        onClick={toggleSidebar}
         id="sidebar-toggle-button"
         className={cn(
           "group group mr-5 mt-2 flex items-center gap-3 rounded-e-full py-3.5 pl-6 text-heading-m text-medium-grey hover:bg-main-purple/10 hover:text-main-purple dark:hover:bg-white lg:mr-6",
@@ -53,7 +55,7 @@ export default function Sidebar({ className }: { className?: string }) {
 
       {/* Invisible button for maintaining layout */}
       <button
-        onClick={() => setCollapsed((collapsed) => !collapsed)}
+        onClick={toggleSidebar}
         id="sidebar-toggle-button"
         className={cn(
           "group group mr-5 mt-2 hidden items-center gap-3 rounded-e-full py-3.5 pl-6 text-heading-m text-medium-grey hover:bg-main-purple/10 hover:text-main-purple dark:hover:bg-white lg:mr-6",

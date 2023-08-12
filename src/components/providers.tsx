@@ -1,5 +1,6 @@
 import { ThemeProvider } from "next-themes";
 import { ClerkProvider } from "@clerk/nextjs";
+import { SidebarProvider } from "./sidebar-context";
 
 export default function Providers({
   children,
@@ -10,9 +11,11 @@ export default function Providers({
 }) {
   return (
     <ClerkProvider {...pageProps}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        {children}
-      </ThemeProvider>
+      <SidebarProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+        </ThemeProvider>
+      </SidebarProvider>
     </ClerkProvider>
   );
 }
