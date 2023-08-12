@@ -16,7 +16,7 @@ export default function ThemeSwitcher() {
         id="theme-switcher"
         defaultChecked={currentTheme === "dark" ? true : false}
         checked={currentTheme === "dark" ? true : false}
-        className="data-[state=checked]:bg-main-purple data-[state=unchecked]:bg-main-purple dark:data-[state=checked]:bg-main-purple dark:data-[state=unchecked]:bg-main-purple"
+        className=""
         onCheckedChange={(checked) => {
           setTheme(checked ? "dark" : "light");
         }}
