@@ -3,6 +3,7 @@ import BoardList from "@/components/board-list";
 import BoardsLayout from "@/components/boards-layout";
 import Button from "@/components/button";
 import NewColumn from "@/components/new-column";
+import Spinner from "@/components/spinner";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
 import type { ReactElement } from "react";
@@ -34,15 +35,21 @@ export default function BoardPage() {
 
   return (
     <>
-      <BoardHeader board={board} />
-      <div className="overflow-auto">
-        <div className="mx-4 my-6 grid min-h-[42rem] grid-flow-col justify-start gap-6">
-          {board?.lists?.map((list) => (
-            <BoardList key={list.id} list={list} />
-          ))}
-          <NewColumn />
+      <BoardHeader board={board} isLoading={isLoading} />
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center">
+          <Spinner className="h-20 w-20" />
         </div>
-      </div>
+      ) : (
+        <div className="overflow-auto">
+          <div className="mx-4 my-6 grid min-h-[42rem] grid-flow-col justify-start gap-6">
+            {board?.lists?.map((list) => (
+              <BoardList key={list.id} list={list} />
+            ))}
+            <NewColumn />
+          </div>
+        </div>
+      )}
     </>
   );
 }

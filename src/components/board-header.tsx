@@ -6,6 +6,7 @@ import { MobileNavButton } from "./mobile-nav";
 import UserButton from "./user-button";
 import Button from "./button";
 import type { Prisma } from "@prisma/client";
+import { Skeleton } from "./ui/skeleton";
 
 type BoardWithListsTasksSubtasks = Prisma.boardsGetPayload<{
   include: {
@@ -23,11 +24,12 @@ type BoardWithListsTasksSubtasks = Prisma.boardsGetPayload<{
 
 export default function BoardHeader({
   board,
+  isLoading,
 }: {
   board: BoardWithListsTasksSubtasks | null | undefined;
+  isLoading?: boolean;
 }) {
-  console.log(mobileLogoSvg);
-
+  console.log(isLoading);
   return (
     <div className="flex h-16 items-center border-lines-light bg-white dark:border-lines-dark dark:bg-dark-grey md:h-20 md:border-b lg:h-24">
       <div className="ml-4 md:ml-6">
@@ -39,7 +41,11 @@ export default function BoardHeader({
       </div>
 
       <div className="flex items-center">
-        <h1 className="text-heading-l">{board?.name ?? "Kanban App"}</h1>
+        {isLoading ? (
+          <Skeleton className="h-7 w-[10rem]" />
+        ) : (
+          <h1 className="text-heading-l">{board?.name ?? "Kanban App"}</h1>
+        )}
         <MobileNavButton className="md:hidden" />
       </div>
 
