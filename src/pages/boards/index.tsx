@@ -1,20 +1,13 @@
 import BoardsLayout from "@/components/boards-layout";
+import Button from "@/components/button";
 import { api } from "@/utils/api";
-import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import type { ReactElement } from "react";
 
 export default function BoardsIndex() {
   const { push } = useRouter();
-  const { user, isLoaded, isSignedIn } = useUser();
 
-  if (!isLoaded || !isSignedIn) {
-    return <p>Getting user information.</p>;
-  }
-
-  const { data, isLoading } = api.boards.getFirstCreated.useQuery({
-    user_id: user.id,
-  });
+  const { data, isLoading } = api.boards.getFirstCreated.useQuery();
   if (isLoading) return <p>Redirecting...</p>;
 
   if (data) {
@@ -25,7 +18,15 @@ export default function BoardsIndex() {
 
   return (
     <>
-      <h1>You don&apos;t have any boards yet.</h1>
+      <div className="row-span-2 flex flex-col items-center justify-center gap-8 text-heading-l text-medium-grey">
+        <h1>
+          You have not created any boards yet. Create a new board to get
+          started.
+        </h1>
+        <Button btnType="primary" size="L" className="w-auto px-5">
+          + Create New Board
+        </Button>
+      </div>
     </>
   );
 }

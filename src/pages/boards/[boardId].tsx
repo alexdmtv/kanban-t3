@@ -1,26 +1,36 @@
 import BoardHeader from "@/components/board-header";
 import BoardList from "@/components/board-list";
 import BoardsLayout from "@/components/boards-layout";
+import Button from "@/components/button";
 import NewColumn from "@/components/new-column";
 import { api } from "@/utils/api";
-import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import type { ReactElement } from "react";
 
 export default function BoardPage() {
   const { query } = useRouter();
-  const { user, isLoaded, isSignedIn } = useUser();
-
-  if (!isLoaded || !isSignedIn) {
-    return <p>Loading...</p>;
-  }
 
   const { data: board, isLoading } = api.boards.getById.useQuery({
-    user_id: user.id,
     board_id: +(query.boardId as string),
   });
 
-  if (!board && !isLoading) return { notFound: true };
+  // Data is finished loading, but there is no board
+  if (!board && !isLoading) return <p>Board not found.</p>;
+
+  // Data is finished loading, but there are no lists
+  if (!isLoading && board?.lists?.length === 0) {
+    return (
+      <>
+        <BoardHeader board={board} />
+        <div className="flex flex-col items-center justify-center gap-8 text-heading-l text-medium-grey">
+          <h1>This board is empty. Create a new list to get started.</h1>
+          <Button btnType="primary" size="L" className="w-auto px-5">
+            + Create New List
+          </Button>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

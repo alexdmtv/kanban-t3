@@ -1,11 +1,10 @@
 import Link from "next/link";
 import BoardIconSvg from "./board-icon-svg";
-import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import UserButton from "./user-button";
 import ThemeSwitcher from "./theme-switcher";
-import { useUser } from "@clerk/nextjs";
 import { api } from "@/utils/api";
+import { useRouter } from "next/router";
 
 export default function Nav({
   className,
@@ -14,21 +13,16 @@ export default function Nav({
   className?: string;
   withUserButton?: boolean;
 }) {
-  const pathname = usePathname();
+  const { asPath: pathname } = useRouter();
 
-  const { user, isLoaded, isSignedIn } = useUser();
-  if (!isLoaded || !isSignedIn) return null;
-
-  const { data: boards, isLoading } = api.boards.getAll.useQuery({
-    user_id: user.id,
-  });
+  const { data: boards } = api.boards.getAll.useQuery();
 
   return (
     <nav className={cn("flex flex-col", className)}>
       <div className="mb-5 flex items-center gap-4 pl-6">
         {withUserButton && <UserButton className="" />}
         <h3 className="text-heading-s uppercase text-medium-grey">
-          All boards ({boards?.length})
+          All boards ({boards?.length ?? 0})
         </h3>
       </div>
 

@@ -1,56 +1,38 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const boardsRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
-  getAll: publicProcedure
-    .input(
-      z.object({
-        user_id: z.string().min(1),
-      })
-    )
-    .query(({ ctx, input }) => {
-      return ctx.prisma.boards.findMany({
-        where: {
-          owner_id: input.user_id,
-        },
-      });
-    }),
-  getFirstCreated: publicProcedure
-    .input(
-      z.object({
-        user_id: z.string().min(1),
-      })
-    )
-    .query(({ ctx, input }) => {
-      return ctx.prisma.boards.findFirst({
-        where: {
-          owner_id: input.user_id,
-        },
-        orderBy: {
-          created_at: "asc",
-        },
-        take: 1,
-      });
-    }),
-  getById: publicProcedure
+  getAll: protectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.boards.findMany({
+      where: {
+        owner_id: ctx.auth.userId,
+      },
+    });
+  }),
+
+  getFirstCreated: protectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.boards.findFirst({
+      where: {
+        owner_id: ctx.auth.userId,
+      },
+      orderBy: {
+        created_at: "asc",
+      },
+      take: 1,
+    });
+  }),
+
+  getById: protectedProcedure
     .input(
       z.object({
         board_id: z.number().min(1),
-        user_id: z.string().min(1),
       })
     )
     .query(({ ctx, input }) => {
       return ctx.prisma.boards.findFirst({
         where: {
           id: input.board_id,
-          owner_id: input.user_id,
+          owner_id: ctx.auth.userId,
         },
         include: {
           lists: {
