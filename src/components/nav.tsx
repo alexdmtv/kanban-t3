@@ -2,9 +2,14 @@ import Link from "next/link";
 import BoardIconSvg from "./board-icon-svg";
 import { cn } from "@/lib/utils";
 import UserButton from "./user-button";
-import ThemeSwitcher from "./theme-switcher";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
+
+// import ThemeSwitcher dinamucally
+import dynamic from "next/dynamic";
+const ThemeSwitcher = dynamic(() => import("./theme-switcher"), {
+  ssr: false,
+});
 
 export default function Nav({
   className,

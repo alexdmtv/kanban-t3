@@ -1,13 +1,28 @@
-import { twMerge } from "tailwind-merge";
+import { cn } from "@/lib/utils";
+import { forwardRef } from "react";
 
-export default function IconButton({
-  children,
-  className,
-  ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button className={twMerge("p-4", className)} {...props}>
+const IconButton = forwardRef<
+  HTMLButtonElement,
+  React.ButtonHTMLAttributes<HTMLButtonElement>
+>(
+  (
+    {
+      children,
+      className,
+      ...props
+    }: {
+      children?: React.ReactNode;
+      className?: string;
+      props?: React.ButtonHTMLAttributes<HTMLButtonElement>;
+    },
+    ref
+  ) => (
+    <button ref={ref} className={cn("p-4", className)} {...props}>
       {children}
     </button>
-  );
-}
+  )
+);
+
+IconButton.displayName = "IconButton";
+
+export default IconButton;
