@@ -3,20 +3,20 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const boardsRouter = createTRPCRouter({
   getAll: protectedProcedure.query(({ ctx }) => {
-    return ctx.prisma.boards.findMany({
+    return ctx.prisma.board.findMany({
       where: {
-        owner_id: ctx.auth.userId,
+        ownerId: ctx.auth.userId,
       },
     });
   }),
 
   getFirstCreated: protectedProcedure.query(({ ctx }) => {
-    return ctx.prisma.boards.findFirst({
+    return ctx.prisma.board.findFirst({
       where: {
-        owner_id: ctx.auth.userId,
+        ownerId: ctx.auth.userId,
       },
       orderBy: {
-        created_at: "asc",
+        createdAt: "asc",
       },
       take: 1,
     });
@@ -25,14 +25,14 @@ export const boardsRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(
       z.object({
-        board_id: z.number().min(1),
+        boardId: z.number().min(1),
       })
     )
     .query(({ ctx, input }) => {
-      return ctx.prisma.boards.findFirst({
+      return ctx.prisma.board.findFirst({
         where: {
-          id: input.board_id,
-          owner_id: ctx.auth.userId,
+          id: input.boardId,
+          ownerId: ctx.auth.userId,
         },
         include: {
           lists: {

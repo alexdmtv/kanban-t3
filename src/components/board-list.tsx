@@ -1,7 +1,7 @@
 import TaskCard from "./task-card";
 import type { Prisma } from "@prisma/client";
 
-type ListWithTasksAndSubtasks = Prisma.listsGetPayload<{
+type ListWithTasksAndSubtasks = Prisma.ListGetPayload<{
   include: {
     tasks: {
       include: {
@@ -21,7 +21,7 @@ export default function BoardList({
       {/* List Header */}
       <div className="flex items-center gap-3">
         <div
-          style={{ backgroundColor: list.color_code }}
+          style={{ backgroundColor: list.colorCode }}
           className="h-[15px] w-[15px] rounded-full bg-slate-600"
         />
         <h2 className="text-heading-s uppercase text-medium-grey">

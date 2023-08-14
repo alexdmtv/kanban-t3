@@ -19,7 +19,7 @@ export default function BoardPage() {
   const { query } = useRouter();
 
   const { data: board, isLoading } = api.boards.getById.useQuery({
-    board_id: +(query.boardId as string),
+    boardId: +(query.boardId as string),
   });
 
   // Data is finished loading, but there is no board

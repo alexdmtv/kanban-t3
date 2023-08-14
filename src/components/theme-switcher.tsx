@@ -14,7 +14,6 @@ export default function ThemeSwitcher() {
       <Image src={lightThemeIcon as string} alt="Light theme" />
       <Switch
         id="theme-switcher"
-        defaultChecked={currentTheme === "dark" ? true : false}
         checked={currentTheme === "dark" ? true : false}
         className=""
         onCheckedChange={(checked) => {
