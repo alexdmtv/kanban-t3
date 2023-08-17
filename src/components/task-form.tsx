@@ -32,9 +32,17 @@ export function TaskForm({
   task,
   boardLists,
 }: {
-  task?: TaskWithSubtasks | null | undefined;
+  task?: TaskWithSubtasks;
   boardLists: Pick<List, "id" | "name">[];
 }) {
+  // rename subtask id to subtaskId, because rhf overrides id
+  if (task?.subtasks) {
+    task.subtasks = task.subtasks.map((subtask) => ({
+      ...subtask,
+      subtaskId: subtask.id,
+    }));
+  }
+
   const form = useForm<InsertTask>({
     resolver: zodResolver(insertTaskSchema),
     defaultValues: {
@@ -61,7 +69,6 @@ export function TaskForm({
   });
 
   function onSubmit(data: InsertTask) {
-    console.log("onSubmit called by react-hook-form", data);
     toast({
       title: "You submitted the following values:",
       description: (

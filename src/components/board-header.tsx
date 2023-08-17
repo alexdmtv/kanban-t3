@@ -1,7 +1,5 @@
 import Image from "next/image";
 import mobileLogoSvg from "../../public/logo-mobile.svg";
-import threeDotsSvg from "../../public/icon-vertical-ellipsis.svg";
-import IconButton from "./icon-button";
 import { MobileNavButton } from "./mobile-nav";
 import UserButton from "./user-button";
 import Button from "./button";
@@ -12,6 +10,9 @@ import { cn } from "@/lib/utils";
 import type { BoardWithListsTasksSubtasks } from "@/lib/types";
 import { ThreeDotsMenu } from "./three-dots-menu";
 import { DropdownMenuItem } from "./ui/dropdown-menu";
+import { BoardModal } from "./board-modal";
+import { useState } from "react";
+import { TaskModal } from "./task-modal";
 
 export default function BoardHeader({
   board,
@@ -21,6 +22,8 @@ export default function BoardHeader({
   isLoading?: boolean;
 }) {
   const { collapsed } = useSidebar();
+  const [boardModalOpen, setBoardModalOpen] = useState(false);
+  const [taskModalOpen, setTaskModalOpen] = useState(false);
 
   return (
     <div className="flex h-16 items-center border-lines-light bg-white dark:border-lines-dark dark:bg-dark-grey md:h-20 md:border-b lg:h-24">
@@ -52,16 +55,38 @@ export default function BoardHeader({
       </div>
 
       <div className="ml-auto mr-2">
-        <Button btnType="primary" size="L" className="hidden px-6 md:block">
+        <Button
+          onClick={() => setTaskModalOpen(true)}
+          btnType="primary"
+          size="L"
+          className="hidden px-6 md:block"
+        >
           + Add New Task
         </Button>
+
+        {board && (
+          <TaskModal
+            board={board}
+            open={taskModalOpen}
+            setOpen={setTaskModalOpen}
+          />
+        )}
+
         <UserButton className="md:hidden" />
       </div>
 
       <ThreeDotsMenu menuTitle="Board menu">
-        <DropdownMenuItem>Edit board</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => setBoardModalOpen(true)}>
+          Edit board
+        </DropdownMenuItem>
         <DropdownMenuItem className="text-red">Delete</DropdownMenuItem>
       </ThreeDotsMenu>
+
+      <BoardModal
+        open={boardModalOpen}
+        board={board}
+        setOpen={setBoardModalOpen}
+      />
     </div>
   );
 }

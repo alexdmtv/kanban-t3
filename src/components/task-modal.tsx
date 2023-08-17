@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { Dialog, DialogContent, DialogHeader } from "./ui/dialog";
-import { Dispatch, SetStateAction, useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { TaskDetail } from "./task-detail";
 import type {
   BoardWithListsTasksSubtasks,

@@ -10,6 +10,7 @@ import { useEffect, type ReactElement, useState } from "react";
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TaskModal } from "@/components/task-modal";
+import { BoardModal } from "@/components/board-modal";
 const BoardHeader = dynamic(() => import("@/components/board-header"), {
   loading: () => <Skeleton className="h-16 md:h-20 lg:h-24" />,
   ssr: false,
@@ -17,6 +18,7 @@ const BoardHeader = dynamic(() => import("@/components/board-header"), {
 
 export default function BoardPage() {
   const router = useRouter();
+  const [boardModalOpen, setBoardModalOpen] = useState(false);
 
   const [taskModalOpen, setTaskModalOpen] = useState(false);
   useEffect(() => {
@@ -43,9 +45,20 @@ export default function BoardPage() {
         <BoardHeader board={board} />
         <div className="flex flex-col items-center justify-center gap-8 text-heading-l text-medium-grey">
           <h1>This board is empty. Create a new list to get started.</h1>
-          <Button btnType="primary" size="L" className="w-auto px-5">
+          <Button
+            onClick={() => setBoardModalOpen(true)}
+            btnType="primary"
+            size="L"
+            className="w-auto px-5"
+          >
             + Create New List
           </Button>
+
+          <BoardModal
+            open={boardModalOpen}
+            board={board}
+            setOpen={setBoardModalOpen}
+          />
         </div>
       </>
     );
@@ -72,7 +85,7 @@ export default function BoardPage() {
             {board?.lists?.map((list) => (
               <BoardList key={list.id} list={list} />
             ))}
-            <NewColumn />
+            {board && <NewColumn board={board} />}
           </div>
         </div>
       )}

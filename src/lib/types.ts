@@ -1,24 +1,29 @@
 import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
-export const ListSchema = z.object({
+export const insertListSchema = z.object({
+  listId: z.number().int().gt(0).optional(),
   name: z.string().min(1, {
     message: "List name must be at least 1 character long",
   }),
   colorCode: z.string(),
   boardPosition: z.number(),
-  boardId: z.number(),
+  boardId: z.number().optional(),
 });
 
-export const BoardSchema = z.object({
+export const insertBoardSchema = z.object({
+  id: z.number().int().gt(0).optional(),
   name: z.string().min(1, {
     message: "Board name must be at least 1 character long",
   }),
-  lists: z.array(ListSchema).optional(),
+  lists: z.array(insertListSchema),
 });
 
-export type TBoardSchema = z.infer<typeof BoardSchema>;
-export type TListSchema = z.infer<typeof ListSchema>;
+export type InsertBoard = z.infer<typeof insertBoardSchema>;
+
+export type BoardWithLists = Prisma.BoardGetPayload<{
+  include: { lists: true };
+}>;
 
 export const insertTaskSchema = z.object({
   id: z.number().int().gt(0).optional(),

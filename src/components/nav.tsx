@@ -9,6 +9,8 @@ import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import { Skeleton } from "./ui/skeleton";
 import { useAuth } from "@clerk/nextjs";
+import { BoardModal } from "./board-modal";
+import { useState } from "react";
 const ThemeSwitcher = dynamic(() => import("./theme-switcher"), {
   ssr: false,
 });
@@ -20,6 +22,7 @@ export default function Nav({
   className?: string;
   withUserButton?: boolean;
 }) {
+  const [boardModalOpen, setBoardModalOpen] = useState(false);
   const router = useRouter();
 
   const { data: boards, isLoading: dataIsLoading } =
@@ -83,13 +86,20 @@ export default function Nav({
               </Link>
             </li>
           ))}
-          <button className="flex w-full items-center gap-3 rounded-e-full py-3.5 pl-6 text-heading-m text-main-purple hover:bg-main-purple/10 hover:text-main-purple dark:hover:bg-white">
+          <button
+            onClick={() => {
+              setBoardModalOpen(true);
+            }}
+            className="flex w-full items-center gap-3 rounded-e-full py-3.5 pl-6 text-heading-m text-main-purple hover:bg-main-purple/10 hover:text-main-purple dark:hover:bg-white"
+          >
             <BoardIconSvg className="fill-main-purple" />
             <span>+ Create new board</span>
           </button>
         </ul>
       )}
       <ThemeSwitcher />
+
+      <BoardModal open={boardModalOpen} setOpen={setBoardModalOpen} />
     </nav>
   );
 }
