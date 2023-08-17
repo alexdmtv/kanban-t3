@@ -5,31 +5,19 @@ import IconButton from "./icon-button";
 import { MobileNavButton } from "./mobile-nav";
 import UserButton from "./user-button";
 import Button from "./button";
-import type { Prisma } from "@prisma/client";
 import { Skeleton } from "./ui/skeleton";
 import { useSidebar } from "./sidebar-context";
 import DesktopLogo from "./desktop-logo";
 import { cn } from "@/lib/utils";
-
-type BoardWithListsTasksSubtasks = Prisma.boardsGetPayload<{
-  include: {
-    lists: {
-      include: {
-        tasks: {
-          include: {
-            subtasks: true;
-          };
-        };
-      };
-    };
-  };
-}>;
+import type { BoardWithListsTasksSubtasks } from "@/lib/types";
+import { ThreeDotsMenu } from "./three-dots-menu";
+import { DropdownMenuItem } from "./ui/dropdown-menu";
 
 export default function BoardHeader({
   board,
   isLoading,
 }: {
-  board: BoardWithListsTasksSubtasks | null | undefined;
+  board?: BoardWithListsTasksSubtasks;
   isLoading?: boolean;
 }) {
   const { collapsed } = useSidebar();
@@ -70,9 +58,10 @@ export default function BoardHeader({
         <UserButton className="md:hidden" />
       </div>
 
-      <IconButton>
-        <Image src={threeDotsSvg as string} alt="Board menu" />
-      </IconButton>
+      <ThreeDotsMenu menuTitle="Board menu">
+        <DropdownMenuItem>Edit board</DropdownMenuItem>
+        <DropdownMenuItem className="text-red">Delete</DropdownMenuItem>
+      </ThreeDotsMenu>
     </div>
   );
 }

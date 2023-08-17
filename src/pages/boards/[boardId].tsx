@@ -1,4 +1,3 @@
-// import BoardHeader from "@/components/board-header";
 import BoardList from "@/components/board-list";
 import BoardsLayout from "@/components/boards-layout";
 import Button from "@/components/button";
@@ -6,21 +5,33 @@ import NewColumn from "@/components/new-column";
 import Spinner from "@/components/spinner";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
-import type { ReactElement } from "react";
+import { useEffect, type ReactElement, useState } from "react";
 
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TaskModal } from "@/components/task-modal";
 const BoardHeader = dynamic(() => import("@/components/board-header"), {
   loading: () => <Skeleton className="h-16 md:h-20 lg:h-24" />,
   ssr: false,
 });
 
 export default function BoardPage() {
-  const { query } = useRouter();
+  const router = useRouter();
+
+  const [taskModalOpen, setTaskModalOpen] = useState(false);
+  useEffect(() => {
+    if (router.query.taskId) {
+      setTaskModalOpen(true);
+    }
+  }, [router.query.taskId]);
 
   const { data: board, isLoading } = api.boards.getById.useQuery({
-    boardId: +(query.boardId as string),
+    boardId: +(router.query.boardId as string),
   });
+
+  const selectedTask = board?.lists
+    ?.flatMap((list) => list.tasks)
+    .find((task) => task.id === +(router.query.taskId as string));
 
   // Data is finished loading, but there is no board
   if (!board && !isLoading) return <p>Board not found.</p>;
@@ -42,7 +53,15 @@ export default function BoardPage() {
 
   return (
     <>
-      <BoardHeader board={board} isLoading={isLoading} />
+      <BoardHeader {...(board ? { board } : { isLoading })} />
+      {board && (
+        <TaskModal
+          selectedTask={selectedTask}
+          board={board}
+          open={taskModalOpen}
+          setOpen={setTaskModalOpen}
+        />
+      )}
       {isLoading ? (
         <div className="col-span-2 flex flex-col items-center justify-center">
           <Spinner className="h-20 w-20" />

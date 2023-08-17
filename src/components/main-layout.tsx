@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { Toaster } from "./ui/toaster";
 
 export default function MainLayout({
   children,
@@ -17,6 +18,7 @@ export default function MainLayout({
         <link rel="icon" href="/icon.png" key="favicon" />
       </Head>
       <main className="">{children}</main>
+      <Toaster />
     </>
   );
 }

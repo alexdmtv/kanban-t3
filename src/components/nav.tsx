@@ -20,7 +20,7 @@ export default function Nav({
   className?: string;
   withUserButton?: boolean;
 }) {
-  const { asPath: pathname } = useRouter();
+  const router = useRouter();
 
   const { data: boards, isLoading: dataIsLoading } =
     api.boards.getAll.useQuery();
@@ -61,7 +61,7 @@ export default function Nav({
                 "group rounded-e-full text-medium-grey hover:bg-main-purple/10 hover:text-main-purple dark:hover:bg-white",
                 {
                   "bg-main-purple text-white hover:bg-main-purple hover:text-white dark:bg-main-purple dark:hover:bg-main-purple":
-                    pathname === `/boards/${b.id}`,
+                    router.query.boardId === b.id.toString(),
                 }
               )}
             >
@@ -74,7 +74,7 @@ export default function Nav({
                     "fill-medium-grey group-hover:fill-main-purple",
                     {
                       "fill-white group-hover:fill-white":
-                        pathname === `/boards/${b.id}`,
+                        router.query.boardId === b.id.toString(),
                     }
                   )}
                 />

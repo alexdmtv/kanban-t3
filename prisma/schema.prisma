@@ -35,7 +35,7 @@ model List {
 model Subtask {
     id           Int      @id @default(autoincrement())
     taskId       Int      @map("task_id")
-    name         String   @db.VarChar(256)
+    title        String   @map("name") @db.VarChar(256)
     taskPosition Int      @map("task_position")
     isCompleted  Boolean  @default(false) @map("is_completed")
     createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(6)
@@ -48,7 +48,7 @@ model Subtask {
 model Task {
     id           Int       @id @default(autoincrement())
     listId       Int       @map("list_id")
-    name         String    @db.VarChar(256)
+    title        String    @map("name") @db.VarChar(256)
     listPosition Int       @map("list_position")
     description  String?
     createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
