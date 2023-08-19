@@ -57,7 +57,9 @@ export default function BoardPage() {
           <BoardModal
             open={boardModalOpen}
             board={board}
-            setOpen={setBoardModalOpen}
+            onOpenChange={(open) => {
+              setBoardModalOpen(open);
+            }}
           />
         </div>
       </>
@@ -76,8 +78,8 @@ export default function BoardPage() {
         />
       )}
       {isLoading ? (
-        <div className="col-span-2 flex flex-col items-center justify-center">
-          <Spinner className="h-20 w-20" />
+        <div className="flex flex-col items-center justify-center col-span-2">
+          <Spinner className="w-20 h-20" />
         </div>
       ) : (
         <div className="overflow-auto">

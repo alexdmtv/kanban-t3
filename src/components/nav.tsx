@@ -32,17 +32,17 @@ export default function Nav({
 
   return (
     <nav className={cn("flex flex-col", className)}>
-      <div className="mb-5 flex items-center gap-4 pl-6">
+      <div className="flex items-center gap-4 pl-6 mb-5">
         {withUserButton &&
           (userLoaded ? (
             <UserButton className="" />
           ) : (
-            <Skeleton className="h-8 w-8 rounded-full bg-medium-grey/20 dark:bg-medium-grey/10" />
+            <Skeleton className="w-8 h-8 rounded-full bg-medium-grey/20 dark:bg-medium-grey/10" />
           ))}
         {dataIsLoading ? (
           <Skeleton className="h-5 bg-medium-grey/20 dark:bg-medium-grey/10" />
         ) : (
-          <h3 className="text-heading-s uppercase text-medium-grey">
+          <h3 className="uppercase text-heading-s text-medium-grey">
             All boards ({boards?.length ?? 0})
           </h3>
         )}
@@ -99,7 +99,12 @@ export default function Nav({
       )}
       <ThemeSwitcher />
 
-      <BoardModal open={boardModalOpen} setOpen={setBoardModalOpen} />
+      <BoardModal
+        open={boardModalOpen}
+        onOpenChange={(open) => {
+          setBoardModalOpen(open);
+        }}
+      />
     </nav>
   );
 }

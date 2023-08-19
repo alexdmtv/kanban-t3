@@ -26,7 +26,7 @@ export default function BoardHeader({
   const [taskModalOpen, setTaskModalOpen] = useState(false);
 
   return (
-    <div className="flex h-16 items-center border-lines-light bg-white dark:border-lines-dark dark:bg-dark-grey md:h-20 md:border-b lg:h-24">
+    <div className="flex items-center h-16 bg-white border-lines-light dark:border-lines-dark dark:bg-dark-grey md:h-20 md:border-b lg:h-24">
       <div
         className={cn("ml-4 flex h-full items-center md:ml-6", {
           "border-lines-light dark:border-lines-dark md:border-r md:pr-8":
@@ -85,7 +85,9 @@ export default function BoardHeader({
       <BoardModal
         open={boardModalOpen}
         board={board}
-        setOpen={setBoardModalOpen}
+        onOpenChange={(open) => {
+          setBoardModalOpen(open);
+        }}
       />
     </div>
   );

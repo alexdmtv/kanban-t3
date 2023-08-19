@@ -1,24 +1,18 @@
 import { Dialog, DialogContent, DialogHeader } from "./ui/dialog";
 import type { BoardWithLists } from "@/lib/types";
 import { BoardForm } from "./board-form";
-import type { Dispatch, SetStateAction } from "react";
 
 export function BoardModal({
   board,
   open,
-  setOpen,
+  onOpenChange,
 }: {
   board?: BoardWithLists;
   open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  onOpenChange: (open: boolean) => void;
 }) {
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(open) => {
-        setOpen(open);
-      }}
-    >
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <div className="flex items-start justify-between">

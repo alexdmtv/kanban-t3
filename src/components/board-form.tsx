@@ -13,36 +13,47 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import DeleteItemButton from "./delete-item-button";
-import {
-  type BoardWithLists,
-  insertBoardSchema,
-  type InsertBoard,
-} from "@/lib/types";
+import { type BoardWithLists, updateBoardSchema } from "@/lib/types";
+import { z } from "zod";
+import { cn } from "@/lib/utils";
 
 export function BoardForm({ board }: { board?: BoardWithLists }) {
-  // rename list id to listId, because rhf overrides id
-  if (board?.lists) {
-    board.lists = board.lists.map((list) => ({
-      ...list,
-      listId: list.id,
-    }));
-  }
+  const schema = updateBoardSchema.merge(
+    z.object({
+      id: z.coerce.number().gt(0).optional(),
+    })
+  );
+  type FormType = z.infer<typeof schema>;
+  const defaultValues = board?.id
+    ? board
+    : {
+        name: "",
+        lists: [
+          {
+            name: "Todo",
+            colorCode: "#635FC7",
+            boardPosition: 0,
+          },
+          {
+            name: "Done",
+            colorCode: "#635FC7",
+            boardPosition: 1,
+          },
+        ],
+      };
 
-  const form = useForm<InsertBoard>({
-    resolver: zodResolver(insertBoardSchema),
-    defaultValues: {
-      id: board?.id,
-      name: board?.name ?? "",
-      lists: board?.lists ?? [],
-    },
+  const form = useForm<FormType>({
+    resolver: zodResolver(schema),
+    defaultValues,
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, update, remove } = useFieldArray({
     control: form.control,
     name: "lists",
+    keyName: "keyId",
   });
 
-  function onSubmit(data: InsertBoard) {
+  function onSubmit(data: FormType) {
     toast({
       title: "You submitted the following values:",
       description: (
@@ -74,12 +85,12 @@ export function BoardForm({ board }: { board?: BoardWithLists }) {
         <div>
           <p className="mb-2 text-body-m text-medium-grey">Board Lists</p>
           <div className="space-y-3">
-            {fields.map((field, index) => (
-              <div key={field.id}>
-                {field.listId && (
+            {fields.map((item, index) => (
+              <div key={item.keyId}>
+                {item.delete && (
                   <input
                     type="hidden"
-                    {...form.register(`lists.${index}.listId`)}
+                    {...form.register(`lists.${index}.delete`)}
                   />
                 )}
 
@@ -87,14 +98,25 @@ export function BoardForm({ board }: { board?: BoardWithLists }) {
                   control={form.control}
                   name={`lists.${index}.name`}
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className={cn("", { hidden: item.delete })}>
                       <FormControl>
                         <div className="flex items-center">
                           <Input placeholder="e.g. Todo" {...field} />
                           <DeleteItemButton
+                            tabIndex={-1}
                             type="button"
                             className="hover:fill-red"
-                            onClick={() => remove(index)}
+                            onClick={() => {
+                              if (!item.id) {
+                                remove(index);
+                                return;
+                              }
+
+                              update(index, {
+                                ...item,
+                                delete: true,
+                              });
+                            }}
                           />
                         </div>
                       </FormControl>
@@ -113,8 +135,8 @@ export function BoardForm({ board }: { board?: BoardWithLists }) {
             onClick={() => {
               append({
                 name: "",
-                boardPosition: 0,
-                colorCode: "blue",
+                colorCode: "#635FC7",
+                boardPosition: fields.length,
               });
             }}
           >

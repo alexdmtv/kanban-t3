@@ -9,9 +9,9 @@ export default function NewColumn({ board }: { board: BoardWithLists }) {
     <div className="pr-6 ">
       <div className="flex h-full w-[17.5rem] flex-col">
         {/* List Header */}
-        <div className="invisible flex items-center gap-3">
+        <div className="flex items-center invisible gap-3">
           <div className="h-[15px] w-[15px] rounded-full bg-slate-600" />
-          <h2 className="text-heading-s uppercase text-medium-grey">
+          <h2 className="uppercase text-heading-s text-medium-grey">
             New Column
           </h2>
         </div>
@@ -29,7 +29,9 @@ export default function NewColumn({ board }: { board: BoardWithLists }) {
       <BoardModal
         open={boardModalOpen}
         board={board}
-        setOpen={setBoardModalOpen}
+        onOpenChange={(open) => {
+          setBoardModalOpen(open);
+        }}
       />
     </div>
   );
