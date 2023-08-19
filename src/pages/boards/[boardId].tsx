@@ -43,7 +43,7 @@ export default function BoardPage() {
     return (
       <>
         <BoardHeader board={board} />
-        <div className="flex flex-col items-center justify-center gap-8 text-heading-l text-medium-grey">
+        <div className="flex flex-col items-center justify-center gap-8 text-center text-heading-l text-medium-grey">
           <h1>This board is empty. Create a new list to get started.</h1>
           <Button
             onClick={() => setBoardModalOpen(true)}
@@ -78,8 +78,8 @@ export default function BoardPage() {
         />
       )}
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center col-span-2">
-          <Spinner className="w-20 h-20" />
+        <div className="col-span-2 flex flex-col items-center justify-center">
+          <Spinner className="h-20 w-20" />
         </div>
       ) : (
         <div className="overflow-auto">
