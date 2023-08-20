@@ -62,7 +62,7 @@ export function TaskDetail({
               <div
                 key={item.id}
                 className={cn(
-                  "group flex items-center gap-4 rounded bg-light-grey px-3 py-3 dark:bg-very-dark-grey"
+                  "group flex items-center gap-4 rounded bg-light-grey px-3 py-3 hover:!bg-main-purple/25 dark:bg-very-dark-grey"
                 )}
               >
                 <FormField
