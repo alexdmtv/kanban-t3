@@ -13,6 +13,7 @@ import { DropdownMenuItem } from "./ui/dropdown-menu";
 import { BoardModal } from "./board-modal";
 import { useState } from "react";
 import { TaskModal } from "./task-modal";
+import { BoardDeleteAlert } from "./board-delete-alert";
 
 export default function BoardHeader({
   board,
@@ -24,6 +25,7 @@ export default function BoardHeader({
   const { collapsed } = useSidebar();
   const [boardModalOpen, setBoardModalOpen] = useState(false);
   const [taskModalOpen, setTaskModalOpen] = useState(false);
+  const [boardDeleteAlertOpen, setBoardDeleteAlertOpen] = useState(false);
 
   return (
     <div className="flex h-16 items-center border-lines-light bg-white dark:border-lines-dark dark:bg-dark-grey md:h-20 md:border-b lg:h-24">
@@ -80,8 +82,23 @@ export default function BoardHeader({
         <DropdownMenuItem onSelect={() => setBoardModalOpen(true)}>
           Edit board
         </DropdownMenuItem>
-        <DropdownMenuItem className="text-red">Delete</DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-red"
+          onSelect={() => setBoardDeleteAlertOpen(true)}
+        >
+          Delete
+        </DropdownMenuItem>
       </ThreeDotsMenu>
+
+      {board && (
+        <BoardDeleteAlert
+          board={board}
+          open={boardDeleteAlertOpen}
+          onOpenChange={(open) => {
+            setBoardDeleteAlertOpen(open);
+          }}
+        />
+      )}
 
       <BoardModal
         open={boardModalOpen}

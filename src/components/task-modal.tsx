@@ -9,6 +9,7 @@ import type {
 import { ThreeDotsMenu } from "./three-dots-menu";
 import { DropdownMenuItem } from "./ui/dropdown-menu";
 import { TaskForm } from "./task-form";
+import { TaskDeleteAlert } from "./task-delete-alert";
 
 export function TaskModal({
   board,
@@ -23,6 +24,7 @@ export function TaskModal({
 }) {
   const router = useRouter();
   const [editOn, setEditOn] = useState(false);
+  const [taskDeleteAlertOpen, setTaskDeleteAlertOpen] = useState(false);
 
   return (
     <Dialog
@@ -69,8 +71,25 @@ export function TaskModal({
                 >
                   {editOn ? "View" : "Edit"}
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-red">Delete</DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    setTaskDeleteAlertOpen(true);
+                  }}
+                  className="text-red"
+                >
+                  Delete
+                </DropdownMenuItem>
               </ThreeDotsMenu>
+            )}
+
+            {selectedTask && (
+              <TaskDeleteAlert
+                task={selectedTask}
+                open={taskDeleteAlertOpen}
+                onOpenChange={(open) => {
+                  setTaskDeleteAlertOpen(open);
+                }}
+              />
             )}
           </div>
         </DialogHeader>
