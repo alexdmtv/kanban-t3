@@ -71,7 +71,9 @@ export default function BoardHeader({
           <TaskModal
             board={board}
             open={taskModalOpen}
-            setOpen={setTaskModalOpen}
+            onOpenChange={(open) => {
+              setTaskModalOpen(open);
+            }}
           />
         )}
 

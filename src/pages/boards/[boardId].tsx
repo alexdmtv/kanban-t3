@@ -74,7 +74,26 @@ export default function BoardPage() {
           selectedTask={selectedTask}
           board={board}
           open={taskModalOpen}
-          setOpen={setTaskModalOpen}
+          onOpenChange={(open) => {
+            setTaskModalOpen(open);
+
+            if (!open) {
+              setTimeout(() => {
+                void router.push(
+                  {
+                    query: {
+                      ...router.query,
+                      taskId: undefined,
+                    },
+                  },
+                  undefined,
+                  {
+                    shallow: true,
+                  }
+                );
+              }, 300);
+            }
+          }}
         />
       )}
       {isLoading ? (

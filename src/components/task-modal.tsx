@@ -15,14 +15,13 @@ export function TaskModal({
   board,
   selectedTask,
   open,
-  setOpen,
+  onOpenChange,
 }: {
   board: BoardWithListsTasksSubtasks;
   selectedTask?: TaskWithSubtasks;
   open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  onOpenChange: (open: boolean) => void;
 }) {
-  const router = useRouter();
   const [editOn, setEditOn] = useState(false);
   const [taskDeleteAlertOpen, setTaskDeleteAlertOpen] = useState(false);
 
@@ -30,26 +29,10 @@ export function TaskModal({
     <Dialog
       open={open}
       onOpenChange={(open) => {
-        setOpen(open);
-
-        if (!open) {
-          setTimeout(() => {
-            void router.push(
-              {
-                query: {
-                  ...router.query,
-                  taskId: undefined,
-                },
-              },
-              undefined,
-              {
-                shallow: true,
-              }
-            );
-
-            setEditOn(false);
-          }, 300);
-        }
+        onOpenChange(open);
+        setTimeout(() => {
+          setEditOn(false);
+        }, 300);
       }}
     >
       <DialogContent>

@@ -22,11 +22,18 @@ import {
   SelectValue,
 } from "./ui/select";
 import {
-  type InsertTask,
-  insertTaskSchema,
   type TaskWithSubtasks,
   type List,
+  updateTaskSchema,
 } from "@/lib/types";
+import { z } from "zod";
+import { cn } from "@/lib/utils";
+
+const subtaskPlaceholders = [
+  "e.g. Make coffee",
+  "e.g. Drink coffee & smile",
+  "e.g. Take a walk",
+];
 
 export function TaskForm({
   task,
@@ -35,40 +42,49 @@ export function TaskForm({
   task?: TaskWithSubtasks;
   boardLists: Pick<List, "id" | "name">[];
 }) {
-  // rename subtask id to subtaskId, because rhf overrides id
-  if (task?.subtasks) {
-    task.subtasks = task.subtasks.map((subtask) => ({
-      ...subtask,
-      subtaskId: subtask.id,
-    }));
-  }
+  const firstListId = boardLists.at(0)?.id;
 
-  const form = useForm<InsertTask>({
-    resolver: zodResolver(insertTaskSchema),
-    defaultValues: {
-      id: task?.id,
-      listId: task?.listId,
-      title: task?.title ?? "",
-      description: task?.description ?? "",
-      subtasks: task?.subtasks ?? [
-        {
-          title: "",
-          isCompleted: false,
-        },
-        {
-          title: "",
-          isCompleted: false,
-        },
-      ],
-    },
+  const schema = updateTaskSchema.merge(
+    z.object({
+      id: z.coerce.number().gt(0).optional(),
+    })
+  );
+  type FormType = z.infer<typeof schema>;
+  const defaultValues = task?.id
+    ? task
+    : {
+        title: "",
+        description: "",
+        listPosition: 0,
+        listId: firstListId,
+        subtasks: [
+          {
+            title: "",
+            isCompleted: false,
+            taskPosition: 0,
+            taskId: task?.id,
+          },
+          {
+            title: "",
+            isCompleted: false,
+            taskPosition: 1,
+            taskId: task?.id,
+          },
+        ],
+      };
+
+  const form = useForm<FormType>({
+    resolver: zodResolver(schema),
+    defaultValues,
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control: form.control,
     name: "subtasks",
+    keyName: "keyId",
   });
 
-  function onSubmit(data: InsertTask) {
+  function onSubmit(data: FormType) {
     toast({
       title: "You submitted the following values:",
       description: (
@@ -82,7 +98,6 @@ export function TaskForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {task?.id && <input type="hidden" {...form.register("id")} />}
         <FormField
           control={form.control}
           name="title"
@@ -118,30 +133,37 @@ recharge the batteries a little."
         <div>
           <p className="mb-2 text-body-m text-medium-grey">Subtasks</p>
           <div className="space-y-3">
-            {fields.map((field, index) => (
-              <div key={field.id}>
-                {field.subtaskId && (
-                  <input
-                    type="hidden"
-                    {...form.register(`subtasks.${index}.subtaskId`)}
-                  />
-                )}
-
+            {fields.map((item, index) => (
+              <div key={item.keyId}>
                 <FormField
                   control={form.control}
                   name={`subtasks.${index}.title`}
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className={cn("", { hidden: item.delete })}>
                       <FormControl>
                         <div className="flex items-center">
                           <Input
-                            placeholder="e.g. Take coffee break"
+                            placeholder={
+                              subtaskPlaceholders.at(index) ??
+                              "Subtask title..."
+                            }
                             {...field}
                           />
                           <DeleteItemButton
+                            tabIndex={-1}
                             type="button"
                             className="hover:fill-red"
-                            onClick={() => remove(index)}
+                            onClick={() => {
+                              if (!item.id) {
+                                remove(index);
+                                return;
+                              }
+
+                              update(index, {
+                                ...item,
+                                delete: true,
+                              });
+                            }}
                           />
                         </div>
                       </FormControl>
@@ -161,6 +183,8 @@ recharge the batteries a little."
               append({
                 title: "",
                 isCompleted: false,
+                taskPosition: fields.length,
+                taskId: task?.id,
               });
             }}
           >
@@ -176,7 +200,7 @@ recharge the batteries a little."
               <FormLabel>List</FormLabel>
               <Select
                 onValueChange={field.onChange}
-                defaultValue={field.value?.toString()}
+                defaultValue={boardLists.at(0)?.id?.toString()}
               >
                 <FormControl>
                   <SelectTrigger>

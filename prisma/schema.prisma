@@ -51,7 +51,7 @@ model Task {
     listId       Int       @map("list_id")
     title        String    @map("name") @db.VarChar(256)
     listPosition Int       @map("list_position")
-    description  String?
+    description  String    @default("")
     createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
     updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
     subtasks     Subtask[]

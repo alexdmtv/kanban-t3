@@ -67,7 +67,6 @@ export function BoardForm({ board }: { board?: BoardWithLists }) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {board?.id && <input type="hidden" {...form.register("id")} />}
         <FormField
           control={form.control}
           name="name"
@@ -87,13 +86,6 @@ export function BoardForm({ board }: { board?: BoardWithLists }) {
           <div className="space-y-3">
             {fields.map((item, index) => (
               <div key={item.keyId}>
-                {item.delete && (
-                  <input
-                    type="hidden"
-                    {...form.register(`lists.${index}.delete`)}
-                  />
-                )}
-
                 <FormField
                   control={form.control}
                   name={`lists.${index}.name`}
@@ -137,6 +129,7 @@ export function BoardForm({ board }: { board?: BoardWithLists }) {
                 name: "",
                 colorCode: "#635FC7",
                 boardPosition: fields.length,
+                boardId: board?.id,
               });
             }}
           >
