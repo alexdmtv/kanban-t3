@@ -5,12 +5,11 @@ import NewColumn from "@/components/new-column";
 import Spinner from "@/components/spinner";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
-import { useEffect, type ReactElement, useState } from "react";
+import { useEffect, type ReactElement } from "react";
 
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TaskModal } from "@/components/task-modal";
-import { BoardModal } from "@/components/board-modal";
+import { useBoardModal, useTaskModal } from "@/lib/store";
 const BoardHeader = dynamic(() => import("@/components/board-header"), {
   loading: () => <Skeleton className="h-16 md:h-20 lg:h-24" />,
   ssr: false,
@@ -18,14 +17,8 @@ const BoardHeader = dynamic(() => import("@/components/board-header"), {
 
 export default function BoardPage() {
   const router = useRouter();
-  const [boardModalOpen, setBoardModalOpen] = useState(false);
-
-  const [taskModalOpen, setTaskModalOpen] = useState(false);
-  useEffect(() => {
-    if (router.query.taskId) {
-      setTaskModalOpen(true);
-    }
-  }, [router.query.taskId]);
+  const { openBoardModal } = useBoardModal();
+  const { openTaskModal } = useTaskModal();
 
   const { data: board, isLoading } = api.boards.getById.useQuery({
     boardId: +(router.query.boardId as string),
@@ -34,6 +27,16 @@ export default function BoardPage() {
   const selectedTask = board?.lists
     ?.flatMap((list) => list.tasks)
     .find((task) => task.id === +(router.query.taskId as string));
+
+  useEffect(() => {
+    if (router.query.taskId && board && selectedTask) {
+      openTaskModal({
+        selectedTask: selectedTask,
+        taskBoard: board,
+      });
+      return;
+    }
+  }, [router.query.taskId, selectedTask, board, openTaskModal]);
 
   // Data is finished loading, but there is no board
   if (!board && !isLoading) return <p>Board not found.</p>;
@@ -46,21 +49,13 @@ export default function BoardPage() {
         <div className="flex flex-col items-center justify-center gap-8 text-center text-heading-l text-medium-grey">
           <h1>This board is empty. Create a new list to get started.</h1>
           <Button
-            onClick={() => setBoardModalOpen(true)}
+            onClick={() => openBoardModal(board)}
             btnType="primary"
             size="L"
             className="w-auto px-5"
           >
             + Create New List
           </Button>
-
-          <BoardModal
-            open={boardModalOpen}
-            board={board}
-            onOpenChange={(open) => {
-              setBoardModalOpen(open);
-            }}
-          />
         </div>
       </>
     );
@@ -69,33 +64,6 @@ export default function BoardPage() {
   return (
     <>
       <BoardHeader {...(board ? { board } : { isLoading })} />
-      {board && (
-        <TaskModal
-          selectedTask={selectedTask}
-          board={board}
-          open={taskModalOpen}
-          onOpenChange={(open) => {
-            setTaskModalOpen(open);
-
-            if (!open) {
-              setTimeout(() => {
-                void router.push(
-                  {
-                    query: {
-                      ...router.query,
-                      taskId: undefined,
-                    },
-                  },
-                  undefined,
-                  {
-                    shallow: true,
-                  }
-                );
-              }, 300);
-            }
-          }}
-        />
-      )}
       {isLoading ? (
         <div className="col-span-2 flex flex-col items-center justify-center">
           <Spinner className="h-20 w-20" />

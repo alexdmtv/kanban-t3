@@ -9,8 +9,7 @@ import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import { Skeleton } from "./ui/skeleton";
 import { useAuth } from "@clerk/nextjs";
-import { BoardModal } from "./board-modal";
-import { useState } from "react";
+import { useBoardModal } from "@/lib/store";
 const ThemeSwitcher = dynamic(() => import("./theme-switcher"), {
   ssr: false,
 });
@@ -22,7 +21,7 @@ export default function Nav({
   className?: string;
   withUserButton?: boolean;
 }) {
-  const [boardModalOpen, setBoardModalOpen] = useState(false);
+  const { openBoardModal } = useBoardModal();
   const router = useRouter();
 
   const { data: boards, isLoading: dataIsLoading } =
@@ -32,17 +31,17 @@ export default function Nav({
 
   return (
     <nav className={cn("flex flex-col", className)}>
-      <div className="flex items-center gap-4 pl-6 mb-5">
+      <div className="mb-5 flex items-center gap-4 pl-6">
         {withUserButton &&
           (userLoaded ? (
             <UserButton className="" />
           ) : (
-            <Skeleton className="w-8 h-8 rounded-full bg-medium-grey/20 dark:bg-medium-grey/10" />
+            <Skeleton className="h-8 w-8 rounded-full bg-medium-grey/20 dark:bg-medium-grey/10" />
           ))}
         {dataIsLoading ? (
           <Skeleton className="h-5 bg-medium-grey/20 dark:bg-medium-grey/10" />
         ) : (
-          <h3 className="uppercase text-heading-s text-medium-grey">
+          <h3 className="text-heading-s uppercase text-medium-grey">
             All boards ({boards?.length ?? 0})
           </h3>
         )}
@@ -88,7 +87,7 @@ export default function Nav({
           ))}
           <button
             onClick={() => {
-              setBoardModalOpen(true);
+              openBoardModal(null);
             }}
             className="flex w-full items-center gap-3 rounded-e-full py-3.5 pl-6 text-heading-m text-main-purple hover:bg-main-purple/10 hover:text-main-purple dark:hover:bg-white"
           >
@@ -98,13 +97,6 @@ export default function Nav({
         </ul>
       )}
       <ThemeSwitcher />
-
-      <BoardModal
-        open={boardModalOpen}
-        onOpenChange={(open) => {
-          setBoardModalOpen(open);
-        }}
-      />
     </nav>
   );
 }

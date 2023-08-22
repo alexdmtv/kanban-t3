@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { NextRouter } from "next/router";
 import { extendTailwindMerge } from "tailwind-merge";
 
 const customTwMerge = extendTailwindMerge({
@@ -20,4 +21,15 @@ const customTwMerge = extendTailwindMerge({
 
 export function cn(...inputs: ClassValue[]) {
   return customTwMerge(clsx(inputs));
+}
+
+export function removeQueryKeyFromUrl(router: NextRouter, key: string) {
+  const query = { ...router.query };
+  delete query[key];
+
+  void router.push({
+    query: {
+      ...query,
+    },
+  });
 }

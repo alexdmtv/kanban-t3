@@ -1,6 +1,8 @@
 import FloatingAddButton from "./floating-add-button";
 import dynamic from "next/dynamic";
 import { Skeleton } from "./ui/skeleton";
+import { BoardModal } from "./board-modal";
+import { TaskModal } from "./task-modal";
 const Sidebar = dynamic(() => import("./sidebar"), {
   loading: () => (
     <Skeleton className="hidden flex-col border-r border-lines-light bg-white pb-8 dark:border-lines-dark dark:bg-dark-grey md:col-span-1 md:flex" />
@@ -20,6 +22,9 @@ export default function BoardsLayout({
         {children}
       </div>
       <FloatingAddButton className="md:hidden" />
+
+      <BoardModal />
+      <TaskModal />
     </div>
   );
 }

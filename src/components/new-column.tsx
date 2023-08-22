@@ -1,9 +1,8 @@
-import { useState } from "react";
-import { BoardModal } from "./board-modal";
 import { type BoardWithLists } from "@/lib/types";
+import { useBoardModal } from "@/lib/store";
 
 export default function NewColumn({ board }: { board: BoardWithLists }) {
-  const [boardModalOpen, setBoardModalOpen] = useState(false);
+  const { openBoardModal } = useBoardModal();
 
   return (
     <div className="pr-6 ">
@@ -18,21 +17,13 @@ export default function NewColumn({ board }: { board: BoardWithLists }) {
         {/* Add new column button */}
         <button
           onClick={() => {
-            setBoardModalOpen(true);
+            openBoardModal(board);
           }}
           className="mt-6 grow rounded-md bg-gradient-to-b from-[#E9EFFA] to-[#E9EFFA]/50 text-heading-xl text-medium-grey hover:text-main-purple dark:from-[#2B2C37]/25 dark:to-[#2B2C37]/10"
         >
           + New List
         </button>
       </div>
-
-      <BoardModal
-        open={boardModalOpen}
-        board={board}
-        onOpenChange={(open) => {
-          setBoardModalOpen(open);
-        }}
-      />
     </div>
   );
 }

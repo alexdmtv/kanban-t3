@@ -9,6 +9,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import Button from "./button";
+import { toast } from "./ui/use-toast";
+import { useRouter } from "next/router";
+import { useTaskModal } from "@/lib/store";
+import { removeQueryKeyFromUrl } from "@/lib/utils";
 
 export function TaskDeleteAlert({
   task,
@@ -19,6 +23,20 @@ export function TaskDeleteAlert({
   task: { id: number; title: string; [key: string]: unknown };
   onOpenChange: (open: boolean) => void;
 }) {
+  const router = useRouter();
+  const { closeTaskModal } = useTaskModal();
+
+  const handleDelete = () => {
+    toast({
+      title: `Task "${task.title}" was deleted`,
+    });
+
+    closeTaskModal();
+    setTimeout(() => {
+      if (router.query.taskId) removeQueryKeyFromUrl(router, "taskId");
+    }, 300);
+  };
+
   return (
     <AlertDialog onOpenChange={onOpenChange} open={open}>
       <AlertDialogContent>
@@ -38,7 +56,7 @@ export function TaskDeleteAlert({
             </Button>
           </AlertDialogCancel>
           <AlertDialogAction>
-            <Button btnType="destructive" size="S">
+            <Button btnType="destructive" size="S" onClick={handleDelete}>
               Delete
             </Button>
           </AlertDialogAction>

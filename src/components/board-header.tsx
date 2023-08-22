@@ -10,10 +10,9 @@ import { cn } from "@/lib/utils";
 import type { BoardWithListsTasksSubtasks } from "@/lib/types";
 import { ThreeDotsMenu } from "./three-dots-menu";
 import { DropdownMenuItem } from "./ui/dropdown-menu";
-import { BoardModal } from "./board-modal";
 import { useState } from "react";
-import { TaskModal } from "./task-modal";
 import { BoardDeleteAlert } from "./board-delete-alert";
+import { useBoardModal, useTaskModal } from "@/lib/store";
 
 export default function BoardHeader({
   board,
@@ -23,8 +22,8 @@ export default function BoardHeader({
   isLoading?: boolean;
 }) {
   const { collapsed } = useSidebar();
-  const [boardModalOpen, setBoardModalOpen] = useState(false);
-  const [taskModalOpen, setTaskModalOpen] = useState(false);
+  const { openBoardModal } = useBoardModal();
+  const { openTaskModal } = useTaskModal();
   const [boardDeleteAlertOpen, setBoardDeleteAlertOpen] = useState(false);
 
   return (
@@ -56,59 +55,45 @@ export default function BoardHeader({
         <MobileNavButton className="md:hidden" />
       </div>
 
-      <div className="ml-auto mr-2">
-        <Button
-          onClick={() => setTaskModalOpen(true)}
-          btnType="primary"
-          size="L"
-          className="hidden px-6 md:block"
-          disabled={board?.lists.length === 0}
-        >
-          + Add New Task
-        </Button>
+      {board && (
+        <div className="ml-auto mr-2">
+          <Button
+            onClick={() =>
+              openTaskModal({ taskBoard: board, selectedTask: null })
+            }
+            btnType="primary"
+            size="L"
+            className="hidden px-6 md:block"
+            disabled={board?.lists.length === 0}
+          >
+            + Add New Task
+          </Button>
 
-        {board && (
-          <TaskModal
-            board={board}
-            open={taskModalOpen}
-            onOpenChange={(open) => {
-              setTaskModalOpen(open);
-            }}
-          />
-        )}
+          <UserButton className="md:hidden" />
+        </div>
+      )}
 
-        <UserButton className="md:hidden" />
-      </div>
-
-      <ThreeDotsMenu menuTitle="Board menu">
-        <DropdownMenuItem onSelect={() => setBoardModalOpen(true)}>
-          Edit board
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="text-red"
-          onSelect={() => setBoardDeleteAlertOpen(true)}
-        >
-          Delete
-        </DropdownMenuItem>
-      </ThreeDotsMenu>
+      {board && (
+        <ThreeDotsMenu menuTitle="Board menu">
+          <DropdownMenuItem onSelect={() => openBoardModal(board)}>
+            Edit board
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="text-red"
+            onSelect={() => setBoardDeleteAlertOpen(true)}
+          >
+            Delete
+          </DropdownMenuItem>
+        </ThreeDotsMenu>
+      )}
 
       {board && (
         <BoardDeleteAlert
           board={board}
           open={boardDeleteAlertOpen}
-          onOpenChange={(open) => {
-            setBoardDeleteAlertOpen(open);
-          }}
+          onOpenChange={setBoardDeleteAlertOpen}
         />
       )}
-
-      <BoardModal
-        open={boardModalOpen}
-        board={board}
-        onOpenChange={(open) => {
-          setBoardModalOpen(open);
-        }}
-      />
     </div>
   );
 }

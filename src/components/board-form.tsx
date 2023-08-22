@@ -17,7 +17,7 @@ import { type BoardWithLists, updateBoardSchema } from "@/lib/types";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
 
-export function BoardForm({ board }: { board?: BoardWithLists }) {
+export function BoardForm({ board }: { board?: BoardWithLists | null }) {
   const schema = updateBoardSchema.merge(
     z.object({
       id: z.coerce.number().gt(0).optional(),
