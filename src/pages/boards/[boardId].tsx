@@ -70,7 +70,7 @@ export default function BoardPage() {
         </div>
       ) : (
         <div className="overflow-auto">
-          <div className="mx-4 my-6 grid min-h-[42rem] grid-flow-col justify-start gap-6">
+          <div className="mx-4 my-6 grid min-h-[42rem] grid-flow-col justify-start gap-6 md:mx-6">
             {board?.lists?.map((list) => (
               <BoardList key={list.id} list={list} />
             ))}

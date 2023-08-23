@@ -5,9 +5,8 @@ import { cn } from "@/lib/utils";
 
 export default function FloatingAddButton({
   className,
-}: {
-  className?: string;
-}) {
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <Button
       btnType="primary"
@@ -16,7 +15,7 @@ export default function FloatingAddButton({
         "absolute bottom-3 right-3 flex h-14 w-14 items-center justify-center rounded-full p-2",
         className
       )}
-      // disabled
+      {...props}
     >
       <Image src={addTaskSvg as string} width={20} alt="Add task" />
     </Button>
