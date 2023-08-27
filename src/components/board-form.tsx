@@ -32,12 +32,12 @@ export function BoardForm({ board }: { board?: BoardWithLists | null }) {
           {
             name: "Todo",
             colorCode: "#635FC7",
-            boardPosition: 0,
+            boardPosition: 10,
           },
           {
             name: "Done",
             colorCode: "#635FC7",
-            boardPosition: 1,
+            boardPosition: 20,
           },
         ],
       };
@@ -128,7 +128,8 @@ export function BoardForm({ board }: { board?: BoardWithLists | null }) {
               append({
                 name: "",
                 colorCode: "#635FC7",
-                boardPosition: fields.length,
+                boardPosition:
+                  Math.max(...fields.map((l) => l.boardPosition)) + 10,
                 boardId: board?.id,
               });
             }}

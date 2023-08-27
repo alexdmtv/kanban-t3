@@ -183,7 +183,8 @@ recharge the batteries a little."
               append({
                 title: "",
                 isCompleted: false,
-                taskPosition: fields.length,
+                taskPosition:
+                  Math.max(...fields.map((s) => s.taskPosition)) + 10,
                 taskId: task?.id,
               });
             }}

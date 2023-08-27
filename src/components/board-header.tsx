@@ -18,7 +18,7 @@ export default function BoardHeader({
   board,
   isLoading,
 }: {
-  board?: BoardWithListsTasksSubtasks;
+  board?: BoardWithListsTasksSubtasks | null;
   isLoading?: boolean;
 }) {
   const { collapsed } = useSidebar();

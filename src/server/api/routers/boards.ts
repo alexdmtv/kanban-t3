@@ -37,10 +37,20 @@ export const boardsRouter = createTRPCRouter({
         },
         include: {
           lists: {
+            orderBy: {
+              boardPosition: "asc",
+            },
             include: {
               tasks: {
+                orderBy: {
+                  listPosition: "asc",
+                },
                 include: {
-                  subtasks: true,
+                  subtasks: {
+                    orderBy: {
+                      taskPosition: "asc",
+                    },
+                  },
                 },
               },
             },

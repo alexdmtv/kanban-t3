@@ -45,7 +45,7 @@ export const insertSubtaskSchema = z.object({
     .max(256, "Subtask title can't be longer than 256 characters"),
   taskId: z.coerce.number().int().gt(0).optional(),
   isCompleted: z.boolean().optional(),
-  taskPosition: z.number().int().gte(0),
+  taskPosition: z.number(),
 });
 export type InsertSubtask = z.infer<typeof insertSubtaskSchema>;
 
@@ -103,3 +103,12 @@ export type BoardWithLists = Prisma.BoardGetPayload<{
   include: { lists: true };
 }>;
 export type List = Prisma.ListGetPayload<true>;
+export type ListWithTasksAndSubtasks = Prisma.ListGetPayload<{
+  include: {
+    tasks: {
+      include: {
+        subtasks: true;
+      };
+    };
+  };
+}>;
