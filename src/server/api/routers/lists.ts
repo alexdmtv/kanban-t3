@@ -10,8 +10,6 @@ export const listsRouter = createTRPCRouter({
       })
     )
     .mutation(({ ctx, input }) => {
-      console.log("reorder", input);
-
       return ctx.prisma.list.update({
         where: {
           id: input.listId,

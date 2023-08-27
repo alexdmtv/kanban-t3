@@ -11,7 +11,6 @@ export default function BoardList({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
       id: list.id,
-      // animateLayoutChanges: () => false,
     });
 
   const style = {
@@ -24,10 +23,13 @@ export default function BoardList({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className="w-[17.5rem] transition-none"
+      className="w-[17.5rem] cursor-default transition-none"
     >
       {/* List Header */}
-      <div {...listeners} className="flex items-center gap-3">
+      <div
+        {...listeners}
+        className="flex cursor-grab items-center gap-3 active:cursor-grabbing"
+      >
         <div
           style={{ backgroundColor: list.colorCode }}
           className="h-[15px] w-[15px] rounded-full bg-slate-600"
