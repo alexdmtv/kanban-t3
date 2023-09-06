@@ -1,11 +1,10 @@
-import BoardList from "@/components/board-list";
 import BoardsLayout from "@/components/boards-layout";
 import Button from "@/components/button";
 import NewColumn from "@/components/new-column";
 import Spinner from "@/components/spinner";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
-import { useEffect, type ReactElement } from "react";
+import { useEffect, type ReactElement, useState } from "react";
 
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,6 +17,8 @@ import {
   closestCenter,
   useSensor,
   useSensors,
+  DragOverlay,
+  type DragStartEvent,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -25,7 +26,10 @@ import {
   horizontalListSortingStrategy,
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
-import { useState } from "react";
+import type { ListWithTasksAndSubtasks } from "@/lib/types";
+import SortableBoardList from "@/components/sortable-board-list";
+import BoardList from "@/components/board-list";
+
 const BoardHeader = dynamic(() => import("@/components/board-header"), {
   loading: () => <Skeleton className="h-16 md:h-20 lg:h-24" />,
   ssr: false,
@@ -34,6 +38,9 @@ const BoardHeader = dynamic(() => import("@/components/board-header"), {
 export default function BoardPage() {
   const router = useRouter();
   const boardId = +(router.query.boardId as string);
+  const [activeList, setActiveList] = useState<ListWithTasksAndSubtasks | null>(
+    null
+  );
 
   const { openBoardModal } = useBoardModal();
   const { openTaskModal } = useTaskModal();
@@ -55,8 +62,6 @@ export default function BoardPage() {
     },
   });
 
-  const [lists, setLists] = useState(board?.lists);
-
   const selectedTask = board?.lists
     ?.flatMap((list) => list.tasks)
     .find((task) => task.id === +(router.query.taskId as string));
@@ -71,10 +76,6 @@ export default function BoardPage() {
     }
   }, [router.query.taskId, selectedTask, board, openTaskModal]);
 
-  useEffect(() => {
-    setLists(board?.lists);
-  }, [board]);
-
   return (
     <>
       <BoardHeader board={board} isLoading={isLoading} />
@@ -85,25 +86,29 @@ export default function BoardPage() {
         </div>
       )}
 
-      {board && lists && board.lists.length > 0 && (
+      {board && board.lists.length > 0 && (
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
           <SortableContext
-            items={lists.map((list) => list.id)}
+            items={board.lists.map((list) => list.id)}
             strategy={horizontalListSortingStrategy}
           >
             <div className="overflow-auto">
               <div className="mx-4 my-6 grid min-h-[42rem] grid-flow-col justify-start gap-6 md:mx-6">
-                {lists.map((list) => (
-                  <BoardList key={list.id} list={list} />
+                {board.lists.map((list) => (
+                  <SortableBoardList key={list.id} list={list} />
                 ))}
                 <NewColumn board={board} />
               </div>
             </div>
           </SortableContext>
+          <DragOverlay>
+            {activeList && <BoardList list={activeList} />}
+          </DragOverlay>
         </DndContext>
       )}
 
@@ -125,38 +130,57 @@ export default function BoardPage() {
     </>
   );
 
+  function handleDragStart(event: DragStartEvent) {
+    const { active } = event;
+
+    if (active.data.current?.type === "list") {
+      setActiveList(active.data.current.list as ListWithTasksAndSubtasks);
+      return;
+    }
+  }
+
   function handleDragEnd(event: DragEndEvent) {
+    setActiveList(null);
+
     const { active, over } = event;
 
-    if (active.id !== over?.id) {
-      setLists((lists) => {
-        if (!lists) return lists;
-        const oldIndex = lists.findIndex((list) => list.id === active.id);
-        const newIndex = lists.findIndex((list) => list.id === over?.id);
-        const maxPosition = Math.max(...lists.map((l) => l.boardPosition)) + 10;
+    if (active.id === over?.id) return;
+    if (!board?.lists) return;
 
-        let newPosition: number;
-        const updatedLists = arrayMove(lists, oldIndex, newIndex);
+    const oldIndex = board.lists.findIndex((list) => list.id === active.id);
+    const newIndex = board.lists.findIndex((list) => list.id === over?.id);
 
-        if (newIndex === 0) {
-          newPosition = updatedLists[newIndex + 1]!.boardPosition / 2;
-        } else if (newIndex === lists.length - 1) {
-          newPosition = maxPosition + 10;
-        } else {
-          newPosition =
-            (updatedLists[newIndex - 1]!.boardPosition +
-              updatedLists[newIndex + 1]!.boardPosition) /
-            2;
-        }
+    const maxPosition =
+      Math.max(...board.lists.map((l) => l.boardPosition)) + 10;
 
-        listReorderMutation.mutate({
-          listId: +active.id,
-          newPosition,
-        });
+    let newPosition: number;
+    const updatedLists = arrayMove(board.lists, oldIndex, newIndex);
+    const nextList = updatedLists[newIndex + 1];
+    const prevList = updatedLists[newIndex - 1];
 
-        return updatedLists;
-      });
+    if (newIndex === 0 && nextList) {
+      newPosition = nextList.boardPosition / 2;
+    } else if (newIndex === board.lists.length - 1) {
+      newPosition = maxPosition + 10;
+    } else {
+      newPosition = (prevList!.boardPosition + nextList!.boardPosition) / 2;
     }
+
+    utils.boards.getById.setData({ boardId }, (prevData) => {
+      if (!prevData) return prevData;
+      return {
+        ...prevData,
+        lists: updatedLists.map((list, i) => {
+          if (i === newIndex) return { ...list, boardPosition: newPosition };
+          return list;
+        }),
+      };
+    });
+
+    listReorderMutation.mutate({
+      listId: +active.id,
+      newPosition,
+    });
   }
 }
 
