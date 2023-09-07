@@ -6,8 +6,10 @@ import { cn } from "@/lib/utils";
 
 export default function SortableBoardList({
   list,
+  className,
 }: {
   list: ListWithTasksAndSubtasks;
+  className?: string;
 }) {
   const {
     attributes,
@@ -36,10 +38,13 @@ export default function SortableBoardList({
       listeners={listeners}
       ref={setNodeRef}
       style={style}
-      className={cn({
-        "select-none rounded-md border-2 border-main-purple bg-dark-grey/10 [&>*]:opacity-0":
-          isDragging,
-      })}
+      className={cn(
+        {
+          "rounded-md border-2 border-main-purple bg-dark-grey/10 [&>*]:opacity-0":
+            isDragging,
+        },
+        className
+      )}
     />
   );
 }

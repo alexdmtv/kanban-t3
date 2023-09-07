@@ -21,7 +21,7 @@ const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
         {...props}
         ref={ref}
         className={cn(
-          "group cursor-grab rounded-lg bg-white px-4 py-6 shadow-md dark:bg-dark-grey",
+          "cursor-grab rounded-lg bg-white px-4 py-6 shadow-md active:cursor-grabbing dark:bg-dark-grey",
           className
         )}
       >
@@ -34,7 +34,7 @@ const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
           }}
           shallow={true}
         >
-          <h3 className="text-heading-m group-hover:text-main-purple">
+          <h3 className="text-heading-m hover:text-main-purple">
             {task.title}
           </h3>
         </Link>

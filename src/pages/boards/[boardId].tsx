@@ -4,7 +4,7 @@ import NewColumn from "@/components/new-column";
 import Spinner from "@/components/spinner";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
-import { useEffect, type ReactElement, useState } from "react";
+import { useEffect, type ReactElement, useState, useMemo } from "react";
 
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,6 +30,7 @@ import type { ListWithTasksAndSubtasks, TaskWithSubtasks } from "@/lib/types";
 import SortableBoardList from "@/components/sortable-board-list";
 import BoardList from "@/components/board-list";
 import TaskCard from "@/components/task-card";
+import { cn } from "@/lib/utils";
 
 const BoardHeader = dynamic(() => import("@/components/board-header"), {
   loading: () => <Skeleton className="h-16 md:h-20 lg:h-24" />,
@@ -61,6 +62,10 @@ export default function BoardPage() {
   const { data: board, isLoading } = api.boards.getById.useQuery({
     boardId,
   });
+  const listIds = useMemo(
+    () => board?.lists?.map((list) => "list_" + list.id),
+    [board]
+  );
   const utils = api.useContext();
   const listReorderMutation = api.lists.reorder.useMutation({
     onSuccess: async () => {
@@ -100,25 +105,29 @@ export default function BoardPage() {
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
         >
-          <SortableContext
-            items={board.lists.map((list) => `list_${list.id}`)}
-            strategy={horizontalListSortingStrategy}
-          >
-            <div className="overflow-auto">
-              <div className="mx-4 my-6 grid min-h-[42rem] grid-flow-col justify-start gap-6 md:mx-6">
+          <div className="overflow-auto">
+            <div className="mx-4 my-6 grid min-h-[42rem] grid-flow-col justify-start gap-6 md:mx-6">
+              <SortableContext
+                items={listIds ?? []}
+                strategy={horizontalListSortingStrategy}
+              >
                 {board.lists.map((list) => (
-                  <SortableBoardList key={list.id} list={list} />
+                  <SortableBoardList key={"list_" + list.id} list={list} />
                 ))}
-                <NewColumn board={board} />
-              </div>
+              </SortableContext>
+
+              <NewColumn board={board} />
             </div>
-          </SortableContext>
+          </div>
           <DragOverlay>
             {activeList && (
-              <BoardList list={activeList} className="[&>*]:cursor-grabbing" />
+              <BoardList
+                list={activeList}
+                className="[&>*:first-child]:cursor-grabbing"
+              />
             )}
             {activeTask && (
-              <TaskCard task={activeTask} className="[&>*]:cursor-grabbing" />
+              <TaskCard task={activeTask} className="cursor-grabbing" />
             )}
           </DragOverlay>
         </DndContext>

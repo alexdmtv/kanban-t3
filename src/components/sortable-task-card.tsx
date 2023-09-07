@@ -4,7 +4,13 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 
-export default function SortableTaskCard({ task }: { task: TaskWithSubtasks }) {
+export default function SortableTaskCard({
+  task,
+  className,
+}: {
+  task: TaskWithSubtasks;
+  className?: string;
+}) {
   const {
     setNodeRef,
     attributes,
@@ -32,10 +38,13 @@ export default function SortableTaskCard({ task }: { task: TaskWithSubtasks }) {
       {...attributes}
       {...listeners}
       style={style}
-      className={cn({
-        "select-none border-2 border-main-purple bg-dark-grey/10 [&>*]:opacity-0":
-          isDragging,
-      })}
+      className={cn(
+        {
+          "border-2 border-main-purple bg-dark-grey/10 [&>*]:opacity-0":
+            isDragging,
+        },
+        className
+      )}
     />
   );
 }
