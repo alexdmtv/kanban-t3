@@ -30,7 +30,6 @@ import type { ListWithTasksAndSubtasks, TaskWithSubtasks } from "@/lib/types";
 import SortableBoardList from "@/components/sortable-board-list";
 import BoardList from "@/components/board-list";
 import TaskCard from "@/components/task-card";
-import { cn } from "@/lib/utils";
 
 const BoardHeader = dynamic(() => import("@/components/board-header"), {
   loading: () => <Skeleton className="h-16 md:h-20 lg:h-24" />,
@@ -217,10 +216,7 @@ export default function BoardPage() {
 
       utils.boards.getById.setData(
         { boardId },
-        {
-          ...board,
-          lists: updatedLists,
-        }
+        { ...board, lists: updatedLists }
       );
       return;
     }
