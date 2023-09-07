@@ -1,26 +1,22 @@
-import type { ListWithTasksAndSubtasks } from "@/lib/types";
-import BoardList from "./board-list";
+import type { TaskWithSubtasks } from "@/lib/types";
+import TaskCard from "./task-card";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 
-export default function SortableBoardList({
-  list,
-}: {
-  list: ListWithTasksAndSubtasks;
-}) {
+export default function SortableTaskCard({ task }: { task: TaskWithSubtasks }) {
   const {
+    setNodeRef,
     attributes,
     listeners,
-    setNodeRef,
     transform,
     transition,
     isDragging,
   } = useSortable({
-    id: `list_${list.id}`,
+    id: `task_${task.id}`,
     data: {
-      type: "list",
-      list,
+      type: "task",
+      task,
     },
   });
 
@@ -30,14 +26,14 @@ export default function SortableBoardList({
   };
 
   return (
-    <BoardList
-      list={list}
-      attributes={attributes}
-      listeners={listeners}
+    <TaskCard
+      task={task}
       ref={setNodeRef}
+      {...attributes}
+      {...listeners}
       style={style}
       className={cn({
-        "select-none rounded-md border-2 border-main-purple bg-dark-grey/10 [&>*]:opacity-0":
+        "select-none border-2 border-main-purple bg-dark-grey/10 [&>*]:opacity-0":
           isDragging,
       })}
     />

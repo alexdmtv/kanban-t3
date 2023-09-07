@@ -1,9 +1,13 @@
 import type { ListWithTasksAndSubtasks } from "@/lib/types";
-import TaskCard from "./task-card";
 import { type ComponentPropsWithoutRef, forwardRef } from "react";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
-import type { DraggableAttributes } from "@dnd-kit/core";
+import { type DraggableAttributes } from "@dnd-kit/core";
 import { cn } from "@/lib/utils";
+import SortableTaskCard from "./sortable-task-card";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 type BoardListProps = {
   list: ListWithTasksAndSubtasks;
@@ -18,7 +22,7 @@ const BoardList = forwardRef<HTMLDivElement, BoardListProps>(
       <div
         {...props}
         ref={ref}
-        className={cn("w-[17.5rem] cursor-default transition-none", className)}
+        className={cn("w-[17.5rem] cursor-default", className)}
       >
         {/* List Header */}
         <div
@@ -36,9 +40,14 @@ const BoardList = forwardRef<HTMLDivElement, BoardListProps>(
         </div>
         {/* List items */}
         <div className="mt-6 flex flex-col gap-5">
-          {list.tasks?.map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
+          <SortableContext
+            strategy={verticalListSortingStrategy}
+            items={list.tasks.map((t) => "task_" + t.id)}
+          >
+            {list.tasks?.map((task) => (
+              <SortableTaskCard key={task.id} task={task} />
+            ))}
+          </SortableContext>
         </div>
       </div>
     );
