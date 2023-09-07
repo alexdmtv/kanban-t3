@@ -71,6 +71,11 @@ export default function BoardPage() {
       await utils.boards.getById.invalidate({ boardId });
     },
   });
+  const taskReorderMutation = api.tasks.reorder.useMutation({
+    onSuccess: async () => {
+      await utils.boards.getById.invalidate({ boardId });
+    },
+  });
 
   const selectedTask = board?.lists
     ?.flatMap((list) => list.tasks)
@@ -281,16 +286,26 @@ export default function BoardPage() {
     setActiveTask(null);
 
     const { active, over } = event;
+    if (!over) return;
 
-    if (active.id === over?.id) return;
+    if (active.data.current?.type === "task") {
+      const activeTask = active.data.current.task as TaskWithSubtasks;
+      taskReorderMutation.mutate({
+        taskId: activeTask.id,
+        newPosition: activeTask.listPosition,
+        newListId: activeTask.listId,
+      });
+      return;
+    }
+
+    if (active.id === over.id) return;
     if (!board?.lists) return;
-    if (active.data.current?.type === "task") return;
 
     const oldIndex = board.lists.findIndex(
       (list) => `list_${list.id}` === active.id
     );
     const newIndex = board.lists.findIndex(
-      (list) => `list_${list.id}` === over?.id
+      (list) => `list_${list.id}` === over.id
     );
     const updatedLists = arrayMove(board.lists, oldIndex, newIndex);
     const currentList = updatedLists[newIndex];
