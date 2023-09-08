@@ -3,16 +3,16 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { insertBoardSchema, updateBoardSchema } from "@/lib/types";
 
 export const boardsRouter = createTRPCRouter({
-  getAll: protectedProcedure.query(({ ctx }) => {
-    return ctx.prisma.board.findMany({
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.board.findMany({
       where: {
         ownerId: ctx.auth.userId,
       },
     });
   }),
 
-  getFirstCreated: protectedProcedure.query(({ ctx }) => {
-    return ctx.prisma.board.findFirst({
+  getFirstCreated: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.board.findFirst({
       where: {
         ownerId: ctx.auth.userId,
       },
@@ -29,8 +29,8 @@ export const boardsRouter = createTRPCRouter({
         boardId: z.number().min(1),
       })
     )
-    .query(({ ctx, input }) => {
-      return ctx.prisma.board.findFirst({
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.board.findFirst({
         where: {
           id: input.boardId,
           ownerId: ctx.auth.userId,
@@ -61,8 +61,8 @@ export const boardsRouter = createTRPCRouter({
 
   create: protectedProcedure
     .input(insertBoardSchema)
-    .mutation(({ ctx, input }) => {
-      return ctx.prisma.board.create({
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.board.create({
         data: {
           ...input,
           lists: {
@@ -75,14 +75,14 @@ export const boardsRouter = createTRPCRouter({
 
   update: protectedProcedure
     .input(updateBoardSchema)
-    .mutation(({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       const { lists, ...board } = input;
 
       const listsToCreate = lists.filter((list) => !list.id);
       const listsToUpdate = lists.filter((list) => list.id);
       const listsToDelete = lists.filter((list) => list.delete);
 
-      return ctx.prisma.board.update({
+      return await ctx.prisma.board.update({
         where: {
           id: board.id,
           ownerId: ctx.auth.userId,
@@ -111,8 +111,8 @@ export const boardsRouter = createTRPCRouter({
         boardId: z.number().min(1),
       })
     )
-    .mutation(({ ctx, input }) => {
-      return ctx.prisma.board.delete({
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.board.delete({
         where: {
           id: input.boardId,
           ownerId: ctx.auth.userId,
