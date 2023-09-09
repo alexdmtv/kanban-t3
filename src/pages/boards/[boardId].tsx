@@ -53,8 +53,7 @@ export default function BoardPage() {
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
-        delay: 250,
-        tolerance: 5,
+        distance: 10,
       },
     }),
     useSensor(TouchSensor, {
