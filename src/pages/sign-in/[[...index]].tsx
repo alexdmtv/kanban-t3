@@ -8,14 +8,12 @@ export default function Page() {
   const currentTheme = theme === "system" ? systemTheme : theme;
 
   return (
-    <SignIn
-      appearance={{
-        elements: {
-          rootBox:
-            "flex flex-col items-center justify-center min-h-screen m-auto",
-        },
-        baseTheme: currentTheme === "dark" ? dark : undefined,
-      }}
-    />
+    <div className="m-auto flex min-h-screen flex-col items-center justify-center">
+      <SignIn
+        appearance={{
+          baseTheme: currentTheme === "dark" ? dark : undefined,
+        }}
+      />
+    </div>
   );
 }

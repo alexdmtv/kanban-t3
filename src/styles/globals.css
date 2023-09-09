@@ -7,3 +7,143 @@
 body {
   @apply h-screen bg-light-grey font-sans text-black dark:bg-very-dark-grey dark:text-white;
 }
+
+.cl-userButtonPopoverCard,
+.cl-userButton-popover {
+  @apply rounded-lg bg-white text-body-l dark:border-very-dark-grey dark:bg-dark-grey;
+}
+
+.cl-card {
+  @apply dark:bg-dark-grey;
+}
+
+.cl-navbar {
+  @apply dark:border-r dark:border-lines-dark dark:bg-dark-grey;
+
+  .cl-navbarButton {
+    @apply dark:text-white dark:ring-main-purple-hover/50 dark:hover:bg-medium-grey;
+  }
+}
+
+.cl-navbarMobileMenuButton {
+  @apply dark:text-white;
+}
+
+.cl-badge {
+  @apply bg-main-purple/20 text-main-purple dark:text-main-purple-hover;
+}
+
+.cl-header a {
+  @apply text-main-purple hover:text-main-purple-hover;
+}
+
+.cl-headerTitle {
+  @apply dark:text-white;
+}
+
+.cl-headerSubtitle {
+  @apply dark:text-medium-grey;
+}
+
+.cl-profileSectionTitle {
+  @apply dark:border-b dark:!border-b-lines-dark;
+
+  .cl-profileSectionTitleText {
+    @apply dark:text-white;
+  }
+}
+
+.cl-accordionTriggerButton {
+  @apply dark:text-white dark:ring-0 dark:hover:bg-main-purple-hover/30;
+}
+
+.cl-accordionContent p {
+  @apply dark:!text-white/80;
+}
+
+.cl-userPreviewTextContainer {
+  @apply dark:text-white;
+}
+
+.cl-profileSectionPrimaryButton {
+  @apply border border-main-purple text-main-purple hover:bg-main-purple-hover/60 dark:text-white/100 dark:hover:bg-main-purple-hover/30;
+}
+
+.cl-profileSectionContent p {
+  @apply dark:text-white;
+}
+
+.cl-breadcrumbs a {
+  @apply dark:text-white/80;
+}
+
+.cl-breadcrumbs a,
+.cl-breadcrumbs p {
+  @apply dark:text-white/80;
+}
+
+button#github,
+button#google {
+  @apply dark:border-white/20 dark:text-white dark:hover:bg-main-purple-hover/30;
+}
+
+p[data-localization-key="userProfile.connectedAccountPage.formHint"] {
+  @apply dark:text-white/80;
+}
+
+.cl-modalCloseButton {
+  @apply dark:text-white/80;
+}
+
+.cl-form p {
+  @apply dark:text-white/80;
+}
+
+.cl-formButtonPrimary {
+  @apply bg-main-purple text-white enabled:hover:bg-main-purple-hover disabled:cursor-not-allowed;
+}
+
+.cl-formButtonReset,
+button[data-localization-key="userProfile.formButtonReset"] {
+  @apply text-main-purple enabled:hover:bg-main-purple-hover enabled:hover:text-white disabled:cursor-not-allowed;
+}
+
+.cl-formFieldRow {
+  .cl-formFieldLabel {
+    @apply dark:text-medium-grey;
+  }
+
+  .cl-formFieldInput {
+    @apply dark:border-white/20 dark:bg-transparent dark:text-white;
+  }
+
+  .cl-formFieldInput input[type="checkbox"] {
+    @apply checked:bg-main-purple dark:border-white/20 dark:bg-transparent dark:text-white;
+  }
+
+  .cl-formFieldInput input[type="checkbox"] input[checked] {
+    @apply bg-main-purple;
+  }
+
+  .cl-formFieldWarningText {
+    @apply dark:text-white/80;
+  }
+
+  .cl-formFieldInputShowPasswordButton {
+    @apply dark:text-white/80;
+  }
+}
+
+.cl-formFieldRow p {
+  @apply dark:text-white/80;
+}
+
+.cl-footerAction a,
+.cl-avatarImageActionsUpload,
+.cl-formFieldAction {
+  @apply dark:text-main-purple;
+}
+
+.cl-identityPreviewEditButton {
+  @apply text-main-purple;
+}
