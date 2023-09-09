@@ -1,5 +1,5 @@
 import type { List, TaskWithSubtasks } from "@/lib/types";
-import { ThreeDotsMenu } from "./three-dots-menu";
+import debounce from "lodash.debounce";
 import { useFieldArray, useForm } from "react-hook-form";
 import {
   Form,
@@ -18,7 +18,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { DropdownMenuItem } from "./ui/dropdown-menu";
+import { api } from "@/utils/api";
+import { useRouter } from "next/router";
+import { toast } from "./ui/use-toast";
+import { useCallback, useEffect, useRef } from "react";
 
 export function TaskDetail({
   task,
@@ -27,6 +30,111 @@ export function TaskDetail({
   task: TaskWithSubtasks;
   boardLists: Pick<List, "id" | "name">[];
 }) {
+  const router = useRouter();
+  const utils = api.useContext();
+
+  const debouncedInvalidateRef = useRef<(() => void) | null>(null);
+  if (!debouncedInvalidateRef.current) {
+    debouncedInvalidateRef.current = debounce(async () => {
+      await utils.boards.getById.invalidate({
+        boardId: +router.query.boardId!,
+      });
+    }, 5000) as () => void;
+  }
+
+  const updateTaskMutation = api.tasks.update.useMutation({
+    onMutate: (newTask) => {
+      void utils.boards.getById.cancel({ boardId: +router.query.boardId! });
+
+      const oldBoard = utils.boards.getById.getData({
+        boardId: +router.query.boardId!,
+      })!;
+
+      const minPositionInANewList = Math.min(
+        ...oldBoard.lists
+          .filter((list) => {
+            return list.id === +newTask.listId;
+          })
+          .flatMap((list) => list.tasks)
+          .map((task) => task.listPosition)
+      );
+
+      newTask = {
+        ...newTask,
+        listId: +newTask.listId,
+        listPosition:
+          +task.listId !== +newTask.listId
+            ? minPositionInANewList / 2
+            : newTask.listPosition,
+      };
+
+      const newBoard = {
+        ...oldBoard,
+        lists: oldBoard.lists.map((list) => {
+          if (list.id === newTask.listId && newTask.listId !== task.listId) {
+            return {
+              ...list,
+              tasks: [...list.tasks, newTask],
+            };
+          } else if (
+            list.id === task.listId &&
+            newTask.listId !== task.listId
+          ) {
+            return {
+              ...list,
+              tasks: list.tasks.filter((t) => t.id !== task.id),
+            };
+          } else if (
+            list.id === task.listId &&
+            newTask.listId === task.listId
+          ) {
+            return {
+              ...list,
+              tasks: list.tasks.map((t) => {
+                if (t.id === task.id) {
+                  return newTask;
+                } else {
+                  return t;
+                }
+              }),
+            };
+          } else {
+            return list;
+          }
+        }),
+      } as typeof oldBoard;
+
+      utils.boards.getById.setData(
+        { boardId: +router.query.boardId! },
+        newBoard
+      );
+
+      return { oldBoard };
+    },
+    onSuccess: (data) => {
+      toast({
+        title: `Task "${data.title}" was updated`,
+      });
+    },
+    onError: (err, newTask, ctx) => {
+      const oldBoard = ctx?.oldBoard;
+      if (oldBoard) {
+        utils.boards.getById.setData(
+          { boardId: +router.query.boardId! },
+          oldBoard
+        );
+      }
+
+      toast({
+        title: "An error occurred.",
+      });
+    },
+
+    onSettled: () => {
+      debouncedInvalidateRef.current?.();
+    },
+  });
+
   const form = useForm<TaskWithSubtasks>({
     defaultValues: task,
   });
@@ -35,9 +143,15 @@ export function TaskDetail({
     control: form.control,
   });
 
-  function onSubmit(data: TaskWithSubtasks) {
-    console.log(data);
-  }
+  const onSubmit = useCallback(
+    (data: TaskWithSubtasks) => updateTaskMutation.mutate(data),
+    [updateTaskMutation]
+  );
+
+  useEffect(() => {
+    const subscription = form.watch(() => void form.handleSubmit(onSubmit)());
+    return () => subscription.unsubscribe();
+  }, [form, onSubmit]);
 
   const totalSubtasks = task.subtasks?.length || 0;
   const completedSubtasks =

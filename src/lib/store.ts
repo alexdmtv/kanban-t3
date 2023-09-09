@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import type { BoardWithLists, TaskWithSubtasks } from "./types";
+import Router from "next/router";
+import { removeQueryKeyFromUrl } from "./utils";
 
 type TaskModalData = {
   selectedTask: TaskWithSubtasks | null;
@@ -25,6 +27,7 @@ const useStore = create<BearStore>()((set) => ({
   closeTaskModal: () => {
     set({ taskModalOpen: false });
     setTimeout(() => set({ taskModalData: null }), 300);
+    if (Router.query.taskId) removeQueryKeyFromUrl(Router, "taskId");
   },
 
   boardModalOpen: false,

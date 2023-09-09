@@ -79,6 +79,7 @@ export const updateTaskSchema = insertTaskSchema.merge(
         z.object({ id: z.coerce.number().int().gt(0).optional() })
       )
     ),
+    listPosition: z.number().optional(),
   })
 );
 export type UpdateTask = z.infer<typeof updateTaskSchema>;

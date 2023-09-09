@@ -28,6 +28,9 @@ import {
 } from "@/lib/types";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
+import { api } from "@/utils/api";
+import { useRouter } from "next/router";
+import { useTaskModal } from "@/lib/store";
 
 const subtaskPlaceholders = [
   "e.g. Make coffee",
@@ -42,8 +45,43 @@ export function TaskForm({
   task?: TaskWithSubtasks;
   boardLists: Pick<List, "id" | "name">[];
 }) {
-  const firstListId = boardLists.at(0)?.id;
+  const router = useRouter();
+  const { boardId } = router.query;
+  const { closeTaskModal } = useTaskModal();
 
+  const utils = api.useContext();
+  const createTaskMutation = api.tasks.create.useMutation({
+    onSuccess: (data) => {
+      void utils.boards.getById.invalidate({ boardId: +boardId! });
+      toast({
+        title: `Task "${data.title}" was created`,
+      });
+      closeTaskModal();
+    },
+    onError: (error) => {
+      toast({
+        title: "An error occurred.",
+        description: error.message,
+      });
+    },
+  });
+  const updateTaskMutation = api.tasks.update.useMutation({
+    onSuccess: (data) => {
+      void utils.boards.getById.invalidate({ boardId: +boardId! });
+      toast({
+        title: `Task "${data.title}" was updated`,
+      });
+      closeTaskModal();
+    },
+    onError: (error) => {
+      toast({
+        title: "An error occurred.",
+        description: error.message,
+      });
+    },
+  });
+
+  const firstListId = boardLists.at(0)?.id;
   const schema = updateTaskSchema.merge(
     z.object({
       id: z.coerce.number().gt(0).optional(),
@@ -55,20 +93,17 @@ export function TaskForm({
     : {
         title: "",
         description: "",
-        listPosition: 0,
         listId: firstListId,
         subtasks: [
           {
             title: "",
             isCompleted: false,
-            taskPosition: 0,
-            taskId: task?.id,
+            taskPosition: 1,
           },
           {
             title: "",
             isCompleted: false,
-            taskPosition: 1,
-            taskId: task?.id,
+            taskPosition: 2,
           },
         ],
       };
@@ -85,14 +120,12 @@ export function TaskForm({
   });
 
   function onSubmit(data: FormType) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    if (!data?.id) {
+      createTaskMutation.mutate(data);
+    } else {
+      const { id, ...rest } = data;
+      updateTaskMutation.mutate({ id, ...rest });
+    }
   }
 
   return (
@@ -222,7 +255,7 @@ recharge the batteries a little."
         />
 
         <Button btnType="primary" size="S" type="submit">
-          Submit
+          {task?.id ? "Save" : "Add Task"}
         </Button>
       </form>
     </Form>

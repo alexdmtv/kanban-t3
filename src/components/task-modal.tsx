@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader } from "./ui/dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TaskDetail } from "./task-detail";
 import { ThreeDotsMenu } from "./three-dots-menu";
 import { DropdownMenuItem } from "./ui/dropdown-menu";
@@ -7,7 +7,6 @@ import { TaskForm } from "./task-form";
 import { TaskDeleteAlert } from "./task-delete-alert";
 import { useTaskModal } from "@/lib/store";
 import { useRouter } from "next/router";
-import { removeQueryKeyFromUrl } from "@/lib/utils";
 
 export function TaskModal() {
   const router = useRouter();
@@ -17,9 +16,16 @@ export function TaskModal() {
   const [editMode, setEditMode] = useState(false);
   const [taskDeleteAlertOpen, setTaskDeleteAlertOpen] = useState(false);
 
-  if (!taskModalData) {
-    return null;
-  }
+  useEffect(() => {
+    if (!taskModalOpen) {
+      setTimeout(() => {
+        setEditMode(false);
+      }, 300);
+    }
+  }, [taskModalOpen, router]);
+
+  if (!taskModalData) return null;
+
   const { taskBoard: board, selectedTask } = taskModalData;
 
   return (
@@ -28,11 +34,6 @@ export function TaskModal() {
       onOpenChange={(open) => {
         if (!open) {
           closeTaskModal();
-
-          setTimeout(() => {
-            if (router.query.taskId) removeQueryKeyFromUrl(router, "taskId");
-            setEditMode(false);
-          }, 300);
         }
       }}
     >

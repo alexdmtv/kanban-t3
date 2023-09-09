@@ -44,9 +44,11 @@ const BoardList = forwardRef<HTMLDivElement, BoardListProps>(
             strategy={verticalListSortingStrategy}
             items={taskIds}
           >
-            {list.tasks?.map((task) => (
-              <SortableTaskCard key={"task_" + task.id} task={task} />
-            ))}
+            {list.tasks
+              ?.sort((a, b) => a.listPosition - b.listPosition)
+              .map((task) => (
+                <SortableTaskCard key={"task_" + task.id} task={task} />
+              ))}
           </SortableContext>
         </div>
       </div>

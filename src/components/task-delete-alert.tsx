@@ -13,6 +13,7 @@ import { toast } from "./ui/use-toast";
 import { useRouter } from "next/router";
 import { useTaskModal } from "@/lib/store";
 import { removeQueryKeyFromUrl } from "@/lib/utils";
+import { api } from "@/utils/api";
 
 export function TaskDeleteAlert({
   task,
@@ -25,16 +26,26 @@ export function TaskDeleteAlert({
 }) {
   const router = useRouter();
   const { closeTaskModal } = useTaskModal();
+  const utils = api.useContext();
+  const deleteTaskMutation = api.tasks.delete.useMutation({
+    onSuccess: () => {
+      void utils.boards.getById.invalidate({ boardId: +router.query.boardId! });
+      toast({
+        title: `Task "${task.title}" was deleted`,
+      });
+      closeTaskModal();
+    },
+
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+      });
+    },
+  });
 
   const handleDelete = () => {
-    toast({
-      title: `Task "${task.title}" was deleted`,
-    });
-
-    closeTaskModal();
-    setTimeout(() => {
-      if (router.query.taskId) removeQueryKeyFromUrl(router, "taskId");
-    }, 300);
+    deleteTaskMutation.mutate(task.id);
   };
 
   return (
