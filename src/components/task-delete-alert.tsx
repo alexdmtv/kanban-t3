@@ -36,10 +36,10 @@ export function TaskDeleteAlert({
       closeTaskModal();
     },
 
-    onError: (error) => {
+    onError: () => {
       toast({
         title: "Error",
-        description: error.message,
+        variant: "destructive",
       });
     },
   });

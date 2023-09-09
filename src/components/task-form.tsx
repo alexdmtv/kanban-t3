@@ -58,10 +58,10 @@ export function TaskForm({
       });
       closeTaskModal();
     },
-    onError: (error) => {
+    onError: () => {
       toast({
         title: "An error occurred.",
-        description: error.message,
+        variant: "destructive",
       });
     },
   });
@@ -73,10 +73,10 @@ export function TaskForm({
       });
       closeTaskModal();
     },
-    onError: (error) => {
+    onError: () => {
       toast({
         title: "An error occurred.",
-        description: error.message,
+        variant: "destructive",
       });
     },
   });

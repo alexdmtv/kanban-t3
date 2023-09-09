@@ -114,6 +114,7 @@ export function TaskDetail({
     onSuccess: (data) => {
       toast({
         title: `Task "${data.title}" was updated`,
+        variant: "default",
       });
     },
     onError: (err, newTask, ctx) => {
@@ -127,6 +128,7 @@ export function TaskDetail({
 
       toast({
         title: "An error occurred.",
+        variant: "destructive",
       });
     },
 
