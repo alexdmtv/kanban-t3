@@ -5,6 +5,7 @@ import Spinner from "@/components/spinner";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
 import { useEffect, type ReactElement, useState, useMemo } from "react";
+import { CSS } from "@dnd-kit/utilities";
 
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,12 +14,13 @@ import {
   DndContext,
   type DragEndEvent,
   KeyboardSensor,
-  PointerSensor,
   useSensor,
   useSensors,
   DragOverlay,
   type DragStartEvent,
   type DragOverEvent,
+  MouseSensor,
+  TouchSensor,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -30,6 +32,7 @@ import type { ListWithTasksAndSubtasks, TaskWithSubtasks } from "@/lib/types";
 import SortableBoardList from "@/components/sortable-board-list";
 import BoardList from "@/components/board-list";
 import TaskCard from "@/components/task-card";
+import { cn } from "@/lib/utils";
 
 const BoardHeader = dynamic(() => import("@/components/board-header"), {
   loading: () => <Skeleton className="h-16 md:h-20 lg:h-24" />,
@@ -43,14 +46,22 @@ export default function BoardPage() {
     null
   );
   const [activeTask, setActiveTask] = useState<TaskWithSubtasks | null>(null);
+  const [isDraggingTask, setIsDraggingTask] = useState(false);
 
   const { openBoardModal } = useBoardModal();
   const { openTaskModal } = useTaskModal();
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: {
-        distance: 10,
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -104,7 +115,6 @@ export default function BoardPage() {
       {board && board.lists.length > 0 && (
         <DndContext
           sensors={sensors}
-          // collisionDetection={closestCenter}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
@@ -123,15 +133,47 @@ export default function BoardPage() {
               <NewColumn board={board} />
             </div>
           </div>
-          <DragOverlay>
+          <DragOverlay
+            dropAnimation={{
+              keyframes: ({ transform, active }) => {
+                if (active.data.current?.type === "list") {
+                  return [
+                    {
+                      transform: CSS.Transform.toString(transform.initial),
+                    },
+                    {
+                      transform: CSS.Transform.toString(transform.final),
+                    },
+                  ];
+                }
+
+                return [
+                  {
+                    transform: CSS.Transform.toString(transform.initial),
+                  },
+                  {
+                    transform:
+                      CSS.Transform.toString(transform.final) +
+                      " rotate(-6deg) translateY(-14.5px) translateX(-3.5px)",
+                  },
+                ];
+              },
+            }}
+          >
             {activeList && (
               <BoardList
                 list={activeList}
-                className="[&>*:first-child]:cursor-grabbing"
+                className="[&_button]:cursor-grabbing"
               />
             )}
             {activeTask && (
-              <TaskCard task={activeTask} className="cursor-grabbing" />
+              <TaskCard
+                task={activeTask}
+                style={{
+                  transform: "rotate(6deg)",
+                }}
+                className={cn("[&_button]:cursor-grabbing")}
+              />
             )}
           </DragOverlay>
         </DndContext>
@@ -282,8 +324,8 @@ export default function BoardPage() {
   }
 
   function handleDragEnd(event: DragEndEvent) {
-    setActiveList(null);
     setActiveTask(null);
+    setActiveList(null);
 
     const { active, over } = event;
     if (!over) return;
@@ -295,6 +337,7 @@ export default function BoardPage() {
         newPosition: activeTask.listPosition,
         newListId: activeTask.listId,
       });
+
       return;
     }
 

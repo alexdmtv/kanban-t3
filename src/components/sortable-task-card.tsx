@@ -36,12 +36,12 @@ export default function SortableTaskCard({
     <TaskCard
       task={task}
       ref={setNodeRef}
-      {...attributes}
-      {...listeners}
+      attributes={attributes}
+      listeners={listeners}
       style={style}
       className={cn(
         {
-          "border-2 border-main-purple bg-dark-grey/10 transition-transform duration-300 [&>*]:opacity-0":
+          "bg-dark-grey/10 outline-dashed outline-2 outline-main-purple-hover/60 [&>*]:opacity-0":
             isDragging,
         },
         className

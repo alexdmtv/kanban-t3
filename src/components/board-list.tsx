@@ -8,6 +8,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import DragHandle from "./drag-handle";
 
 type BoardListProps = {
   list: ListWithTasksAndSubtasks;
@@ -25,18 +26,15 @@ const BoardList = forwardRef<HTMLDivElement, BoardListProps>(
     return (
       <div {...props} ref={ref} className={cn("w-[17.5rem]", className)}>
         {/* List Header */}
-        <div
-          {...listeners}
-          {...attributes}
-          className="flex cursor-grab items-center gap-3 active:cursor-grabbing"
-        >
+        <div className="flex items-center gap-3">
           <div
             style={{ backgroundColor: list.colorCode }}
             className="h-[15px] w-[15px] rounded-full bg-slate-600"
           />
-          <h2 className="text-heading-s uppercase text-medium-grey">
+          <h2 className="mr-auto text-heading-s uppercase text-medium-grey">
             {list.name} ({list?.tasks?.length || 0})
           </h2>
+          <DragHandle {...listeners} {...attributes} />
         </div>
         {/* List items */}
         <div className="mt-6 space-y-5">

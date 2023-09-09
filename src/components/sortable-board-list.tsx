@@ -40,7 +40,7 @@ export default function SortableBoardList({
       style={style}
       className={cn(
         {
-          "rounded-md border-2 border-main-purple bg-dark-grey/10 [&>*]:opacity-0":
+          "rounded-md bg-dark-grey/10 outline-dashed outline-2 outline-main-purple-hover/60 [&>*]:opacity-0":
             isDragging,
         },
         className
