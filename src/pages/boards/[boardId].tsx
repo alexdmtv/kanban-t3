@@ -46,7 +46,6 @@ export default function BoardPage() {
     null
   );
   const [activeTask, setActiveTask] = useState<TaskWithSubtasks | null>(null);
-  const [isDraggingTask, setIsDraggingTask] = useState(false);
 
   const { openBoardModal } = useBoardModal();
   const { openTaskModal } = useTaskModal();

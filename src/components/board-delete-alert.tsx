@@ -9,6 +9,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import Button from "./button";
+import { useRouter } from "next/router";
+import { api } from "@/utils/api";
+import { toast } from "./ui/use-toast";
 
 export function BoardDeleteAlert({
   board,
@@ -19,6 +22,29 @@ export function BoardDeleteAlert({
   board: { id: number; name: string; [key: string]: unknown };
   onOpenChange: (open: boolean) => void;
 }) {
+  const router = useRouter();
+  const utils = api.useContext();
+  const deleteBoardMutation = api.boards.delete.useMutation({
+    onSuccess: async () => {
+      toast({
+        title: `Board "${board.name}" deleted`,
+      });
+      await router.push("/boards");
+    },
+
+    onError: async () => {
+      toast({
+        title: `Error deleting the "${board.name}" board.`,
+        variant: "destructive",
+      });
+      await utils.boards.getById.invalidate({ boardId: board.id });
+    },
+  });
+
+  const handleDelete = () => {
+    deleteBoardMutation.mutate({ boardId: board.id });
+  };
+
   return (
     <AlertDialog onOpenChange={onOpenChange} open={open}>
       <AlertDialogContent>
@@ -39,7 +65,7 @@ export function BoardDeleteAlert({
             </Button>
           </AlertDialogCancel>
           <AlertDialogAction>
-            <Button btnType="destructive" size="S">
+            <Button btnType="destructive" size="S" onClick={handleDelete}>
               Delete
             </Button>
           </AlertDialogAction>

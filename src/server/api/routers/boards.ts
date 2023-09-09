@@ -78,6 +78,10 @@ export const boardsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { lists, ...board } = input;
 
+      lists.forEach((l) => {
+        delete l.boardId;
+      });
+
       const listsToCreate = lists.filter((list) => !list.id);
       const listsToUpdate = lists.filter((list) => list.id && !list.delete);
       const listsToDelete = lists.filter((list) => list.delete);

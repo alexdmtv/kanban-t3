@@ -16,8 +16,56 @@ import DeleteItemButton from "./delete-item-button";
 import { type BoardWithLists, updateBoardSchema } from "@/lib/types";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
+import { api } from "@/utils/api";
+import { useRouter } from "next/router";
+import { useBoardModal } from "@/lib/store";
 
 export function BoardForm({ board }: { board?: BoardWithLists | null }) {
+  const router = useRouter();
+  const { closeBoardModal } = useBoardModal();
+
+  const utils = api.useContext();
+  const createBoardMutation = api.boards.create.useMutation({
+    onSuccess: async (newBoard) => {
+      closeBoardModal();
+      await router.push(`/boards/${newBoard.id}`);
+      toast({
+        title: `Board "${newBoard.name}" created`,
+      });
+    },
+
+    onError: (error, board) => {
+      toast({
+        title: `Error creating the "${board.name}" board.`,
+        variant: "destructive",
+      });
+    },
+
+    onSettled: () => {
+      void utils.boards.getAll.invalidate();
+    },
+  });
+
+  const updateBoardMutation = api.boards.update.useMutation({
+    onSuccess: (updatedBoard) => {
+      closeBoardModal();
+      toast({
+        title: `Board "${updatedBoard.name}" updated`,
+      });
+    },
+
+    onError: (error, board) => {
+      toast({
+        title: `Error updating the "${board.name}" board.`,
+        variant: "destructive",
+      });
+    },
+
+    onSettled: () => {
+      void utils.boards.getById.invalidate({ boardId: +router.query.boardId! });
+    },
+  });
+
   const schema = updateBoardSchema.merge(
     z.object({
       id: z.coerce.number().gt(0).optional(),
@@ -32,12 +80,12 @@ export function BoardForm({ board }: { board?: BoardWithLists | null }) {
           {
             name: "Todo",
             colorCode: "#635FC7",
-            boardPosition: 10,
+            boardPosition: 1,
           },
           {
             name: "Done",
             colorCode: "#635FC7",
-            boardPosition: 20,
+            boardPosition: 2,
           },
         ],
       };
@@ -54,14 +102,11 @@ export function BoardForm({ board }: { board?: BoardWithLists | null }) {
   });
 
   function onSubmit(data: FormType) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    if (board?.id) {
+      updateBoardMutation.mutate({ ...data, id: board.id });
+    } else {
+      createBoardMutation.mutate(data);
+    }
   }
 
   return (
@@ -129,8 +174,9 @@ export function BoardForm({ board }: { board?: BoardWithLists | null }) {
                 name: "",
                 colorCode: "#635FC7",
                 boardPosition:
-                  Math.max(...fields.map((l) => l.boardPosition)) + 10,
-                boardId: board?.id,
+                  fields.length > 0
+                    ? Math.max(...fields.map((l) => l.boardPosition)) + 10
+                    : 1,
               });
             }}
           >
