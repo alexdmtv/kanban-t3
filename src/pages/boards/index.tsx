@@ -1,12 +1,14 @@
 import BoardsLayout from "@/components/boards-layout";
 import Button from "@/components/button";
 import Spinner from "@/components/spinner";
+import { useBoardModal } from "@/lib/store";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
 import type { ReactElement } from "react";
 
 export default function BoardsIndex() {
   const { push } = useRouter();
+  const { openBoardModal } = useBoardModal();
 
   const { data, isLoading } = api.boards.getFirstCreated.useQuery();
   const spinnerComponent = (
@@ -30,7 +32,14 @@ export default function BoardsIndex() {
           You have not created any boards yet. Create a new board to get
           started.
         </h1>
-        <Button btnType="primary" size="L" className="w-auto px-5">
+        <Button
+          btnType="primary"
+          size="L"
+          className="w-auto px-5"
+          onClick={() => {
+            openBoardModal(null);
+          }}
+        >
           + Create New Board
         </Button>
       </div>
