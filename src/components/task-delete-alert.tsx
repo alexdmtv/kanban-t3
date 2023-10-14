@@ -12,7 +12,6 @@ import Button from "./button";
 import { toast } from "./ui/use-toast";
 import { useRouter } from "next/router";
 import { useTaskModal } from "@/lib/store";
-import { removeQueryKeyFromUrl } from "@/lib/utils";
 import { api } from "@/utils/api";
 
 export function TaskDeleteAlert({

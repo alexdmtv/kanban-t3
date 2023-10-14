@@ -1,5 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
-import { NextRouter } from "next/router";
+import { type NextRouter } from "next/router";
 import { extendTailwindMerge } from "tailwind-merge";
 
 const customTwMerge = extendTailwindMerge({
