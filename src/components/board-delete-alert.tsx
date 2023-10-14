@@ -29,6 +29,7 @@ export function BoardDeleteAlert({
       toast({
         title: `Board "${board.name}" deleted`,
       });
+      void utils.boards.getAll.invalidate();
       await router.push("/boards");
     },
 
