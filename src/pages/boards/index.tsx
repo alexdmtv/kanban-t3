@@ -1,5 +1,6 @@
 import BoardsLayout from "@/components/boards-layout";
 import Button from "@/components/button";
+import Spinner from "@/components/spinner";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
 import type { ReactElement } from "react";
@@ -8,10 +9,18 @@ export default function BoardsIndex() {
   const { push } = useRouter();
 
   const { data, isLoading } = api.boards.getFirstCreated.useQuery();
-  if (isLoading) return <p>Redirecting...</p>;
+  const spinnerComponent = (
+    <div className="col-span-2 flex h-screen flex-col items-center justify-center">
+      <Spinner className="h-20 w-20" />
+    </div>
+  );
+
+  if (isLoading) return spinnerComponent;
 
   if (data) {
     void push(`/boards/${data.id}`);
+
+    return spinnerComponent;
   }
 
   return (
