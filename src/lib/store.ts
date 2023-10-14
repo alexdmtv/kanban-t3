@@ -8,7 +8,7 @@ type TaskModalData = {
   taskBoard: BoardWithLists;
 };
 
-type BearStore = {
+type Store = {
   taskModalOpen: boolean;
   taskModalData: TaskModalData | null;
   openTaskModal: (data: TaskModalData) => void;
@@ -20,7 +20,7 @@ type BearStore = {
   closeBoardModal: () => void;
 };
 
-const useStore = create<BearStore>()((set) => ({
+const useStore = create<Store>()((set) => ({
   taskModalOpen: false,
   taskModalData: null,
   openTaskModal: (data) => set({ taskModalOpen: true, taskModalData: data }),
