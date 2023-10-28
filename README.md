@@ -1,28 +1,40 @@
-# Create T3 App
+# Example of a Kanban Board Application created with T3 stack
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Welcome to my T3/Next.js Kanban Board application. It's a demonstration project created from scratch using the [Frontend Mentor figma design and images](https://www.frontendmentor.io/challenges/kanban-task-management-web-app-wgQLt-HlbB). 
+I've used the T3 template, which is based on Next.js, TRPC, and Prisma.
 
-## What's next? How do I make an app with this?
+I've also built this project with the Rails + Hotwire stack. You can find it [here](https://github.com/alexdmtv/rails-kanban).
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Features
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+* **Boards**: Create and manage multiple Kanban boards.
+* **Lists** (Columns): Create lists to organize your tasks. Rearrange them by dragging.
+* **Cards** (Tasks): Create tasks with descriptions. Rearrange them within or between lists by dragging.
+* **Subtasks**: Add actionable subtasks to your main tasks for a more detailed level of granularity.
+* **Drag & Drop**: Powered by dnd kit, offering a seamless user experience in organizing tasks and columns.
+* **Authentication**: Powered by Clerk. Supports connecting multiple accounts, managing connected devices, and more.
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## Technologies
 
-## Learn More
+* Next.js 13
+* Clerk (authentication provider)
+* Prisma (ORM)
+* PostgreSQL
+* Shadcn components (Radix based UI components library)
+* Tailwind
+* Zod (schema validation)
+* TRPC (api layer)
+* dnd kit (drag and drop functionality)
+* Zustand (global state manager)
+* React Hook Form
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+## Quick Start
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+1. Clone the repository.
+2. Set up a Clerk account.
+3. Set up PostgreSQL.
+4. Copy and rename `.env.example` to `.env` and fill in the missing values.
+5. Install JavaScript dependencies using `pnpm install`.
+6. Run the `pnpm dev` script to start the development server.
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+This application is deployed and can be accessed at the following URL: https://t3-kanban-app.up.railway.app.
